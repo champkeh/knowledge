@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Validate WebAssembly</title>
+    <style>
+        #result span {
+            font-weight: bold;
+        }
+        .valid {
+            color: green;
+        }
+        .invalid {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<p id="result">The wasm module is </p>
+<script>
+    const $result = document.querySelector('#result')
+    fetch('add.wasm').then(response => response.arrayBuffer()).then(bytes => {
+        const valid = WebAssembly.validate(bytes)
+        $result.innerHTML = `The wasm module is ${valid ? '<span class="valid">valid</span>':'<span class="invalid">invalid</span>'}`
+    })
+</script>
+</body>
+</html>

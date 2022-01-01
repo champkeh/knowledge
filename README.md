@@ -9,3 +9,4 @@
 - [Rollup](rollup)
 - [Source map](source-map)
 - [Svelte](svelte)
+- [WebAssembly](wasm)

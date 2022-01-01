@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebAssembly JavaScript API</title>
+</head>
+<body>
+<h1>WebAssembly JavaScript API</h1>
+<script>
+    const tbl = new WebAssembly.Table({initial: 2, element: "anyfunc"})
+    const importObject = {
+        js: {
+            tbl: tbl
+        }
+    }
+
+    WebAssembly.instantiateStreaming(fetch('table.wasm'), importObject).then(obj => {
+        console.log(tbl.get(0)())
+        console.log(tbl.get(1)())
+    })
+</script>
+</body>
+</html>

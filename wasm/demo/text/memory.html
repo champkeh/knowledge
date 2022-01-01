@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    const memory = new WebAssembly.Memory({initial:10, maximum:100})
+
+    function strLength(buffer) {
+        const uint8 = new Uint8Array(buffer)
+        let len = 0
+        while (uint8[len]) {
+            len++
+        }
+        return len
+    }
+
+    function consoleLogString(offset) {
+        const length = strLength(memory.buffer)
+        console.log(length)
+        const bytes = new Uint8Array(memory.buffer, offset, length)
+        const string = new TextDecoder('utf8').decode(bytes)
+        console.log(string)
+    }
+
+    const importObject = {
+        console: {
+            log: consoleLogString
+        },
+        js: {
+            mem: memory
+        }
+    }
+    WebAssembly.instantiateStreaming(fetch('memory.wasm'), importObject).then(obj => {
+        obj.instance.exports.writeHi()
+    })
+</script>
+</body>
+</html>

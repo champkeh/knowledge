@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script>
+    const anotherTable = new WebAssembly.Table({element: 'anyfunc', initial: 2})
+
+    WebAssembly.instantiateStreaming(fetch('table.wasm'))
+        .then(results => {
+            const table = results.instance.exports.tbl
+            console.log(table.get(0)()) // 13
+            console.log(table.get(1)()) // 42
+
+            anotherTable.set(0, table.get(0))
+            anotherTable.set(1, table.get(1))
+            console.log(anotherTable.get(0)())
+            console.log(anotherTable.get(1)())
+
+            console.log(anotherTable.get(0).prototype)
+        })
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+        div {
+            width: 100px;
+            height: 100px;
+            background-color: red;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+<div></div>
+</body>
+<script>
+    let start = null;
+    let element = document.querySelector('div');
+
+    const step = (timestamp) => {
+        console.log(timestamp)
+        if (!start) start = timestamp;
+        let progress = timestamp - start;
+        element.style.left = Math.min(progress / 10, 200) + 'px';
+        if (progress < 2000) {
+            window.requestAnimationFrame(step);
+        }
+    }
+
+    window.requestAnimationFrame(step);
+</script>
+</html>

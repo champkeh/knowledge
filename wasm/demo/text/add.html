@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    const importObject = {
+        console: {
+            log: function (arg) {
+                console.log(arg)
+            }
+        }
+    }
+    WebAssembly.instantiateStreaming(fetch('add.wasm'), importObject).then(obj => {
+        obj.instance.exports.logIt('12abc')
+    })
+</script>
+</body>
+</html>

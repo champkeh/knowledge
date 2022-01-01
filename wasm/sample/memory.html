@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<script>
+    WebAssembly.instantiateStreaming(fetch('memory.wasm'))
+        .then(results => {
+            const i32 = new Uint32Array(results.instance.exports.mem)
+            for (let i = 0; i < 10; i++) {
+                i32[i] = i
+            }
+
+            const sum = results.instance.exports.accumulate(0, 10)
+            console.log(sum)
+        })
+</script>
+</body>
+</html>
