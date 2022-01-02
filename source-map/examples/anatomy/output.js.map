@@ -1,0 +1,25 @@
+{
+  "version": 3,
+  "sources": [
+    "input.js"
+  ],
+  "names": [
+    "incrementSet",
+    "state",
+    "scorer",
+    "nonScorer",
+    "games",
+    "currentSet",
+    "players",
+    "PLAYER",
+    "sets",
+    "OPPONENT",
+    "completedSets",
+    "isPlayer",
+    "isFinalSet",
+    "config",
+    "numSets",
+    "isComplete"
+  ],
+  "mappings": "AAAA,SAASA,aAAcC,EAAOC,EAAQC,GAClCD,EAAOE,QACP,IAAIC,EAAaJ,EAAMK,QAAQC,QAAQC,KAAOP,EAAMK,QAAQG,UAAUD,KACtE,IAAKP,EAAMS,cAAcL,GAAaJ,EAAMS,cAAcL,GAAc,GACxEJ,EAAMS,cAAcL,GAAYE,QAAUL,EAAOS,SAAWT,EAAOE,MAAQD,EAAUC,MACrFH,EAAMS,cAAcL,GAAYI,UAAYP,EAAOS,SAAWR,EAAUC,MAAQF,EAAOE,MACvFF,EAAOE,MAAQ,EACfD,EAAUC,MAAQ,EAClBF,EAAOM,KAAON,EAAOM,KAAO,EAC5BP,EAAMW,WAAaV,EAAOM,KAAOL,EAAUK,OAASP,EAAMY,OAAOC,QAAU,EAC3E,GAAIZ,EAAOM,KAAOP,EAAMY,OAAOC,QAAUZ,EAAOM,KAAMP,EAAMc,WAAa"
+}

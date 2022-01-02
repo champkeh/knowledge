@@ -1,0 +1,2 @@
+function incrementSet(e,s,t){s.games++;var m=e.players[PLAYER].sets+e.players[OPPONENT].sets;if(!e.completedSets[m])e.completedSets[m]=[];e.completedSets[m][PLAYER]=s.isPlayer?s.games:t.games;e.completedSets[m][OPPONENT]=s.isPlayer?t.games:s.games;s.games=0;t.games=0;s.sets=s.sets+1;e.isFinalSet=s.sets+t.sets===e.config.numSets-1;if(s.sets>e.config.numSets-s.sets)e.isComplete=true}
+//# sourceMappingURL=output.js.map

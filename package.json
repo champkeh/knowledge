@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/champkeh/knowledge#readme",
   "dependencies": {
-    "abstract-syntax-tree": "^2.20.5"
+    "concat-stream": "^2.0.0",
+    "vlq": "^2.0.4"
   }
 }
