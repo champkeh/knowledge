@@ -1,0 +1,47 @@
+{
+  "version": 3,
+  "sources": [
+    "input.js"
+  ],
+  "names": [
+    "add",
+    "num1",
+    "num2",
+    "sum",
+    "nums",
+    "console",
+    "log",
+    "length",
+    "reduce",
+    "total",
+    "num"
+  ],
+  "mappings": {
+    "1": [
+      "1 => input.js 1:1 add",
+      "10 => input.js 1:10 add",
+      "14 => input.js 1:14 num1",
+      "16 => input.js 1:20 num2",
+      "19 => input.js 2:5 num2",
+      "26 => input.js 2:12 num1",
+      "28 => input.js 2:19 num2",
+      "30 => input.js 5:1 num2",
+      "39 => input.js 5:10 sum",
+      "43 => input.js 5:14 nums",
+      "46 => input.js 6:5 console",
+      "54 => input.js 6:13 log",
+      "58 => input.js 6:17 nums",
+      "60 => input.js 6:22 length",
+      "68 => input.js 7:5 length",
+      "75 => input.js 7:12 nums",
+      "77 => input.js 7:17 reduce",
+      "84 => input.js 7:24 reduce",
+      "85 => input.js 7:25 total",
+      "87 => input.js 7:32 num",
+      "91 => input.js 7:40 total",
+      "93 => input.js 7:48 num",
+      "95 => input.js 7:53 num",
+      "98 => input.js 10:1 sum"
+    ]
+  }
+}

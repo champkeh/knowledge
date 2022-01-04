@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "sources": [
+    "input.js"
+  ],
+  "names": [
+    "add",
+    "num1",
+    "num2",
+    "sum",
+    "nums",
+    "console",
+    "log",
+    "length",
+    "reduce",
+    "total",
+    "num"
+  ],
+  "mappings": "AAAA,SAASA,IAAIC,EAAMC,GACf,OAAOD,EAAOC,EAGlB,SAASC,IAAIC,GACTC,QAAQC,IAAIF,EAAKG,QACjB,OAAOH,EAAKI,OAAO,CAACC,EAAOC,IAAQD,EAAQC,EAAK,GAGpDP"
+}
