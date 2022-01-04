@@ -179,3 +179,49 @@ $ cat output.js.map | node decode > output2.js.map
   }
 }
 ```
+这就是Source map文件的`mappings`字段所编码的信息，有了这个信息，我们再回过头来看一下，在没有source map时的报错信息：
+![img.png](img.png)
+注意看上图中红框处的信息，报错位置在`output.js`文件的第1行第60列处，我们根据上面source map中的`mappings`字段的映射关系，查询第1行第60列对应的是`input.js 6:22 length`，也就是说，报错是在`input.js`文件的第6行第22列处，该处的符号是`length`。
+![img_1.png](img_1.png)
+如此一来，我们就仿佛有了一个字典一样，只要对照着`output.js`文件的报错位置，就可以轻松知道该位置在源码中的对应位置，这就是Source Map的神奇之处。
+
+而`mappings`所编码的信息正是source map的核心：
+```
+"mappings": {
+  "0": [
+   ^
+   └── the line number of the output file
+
+    "231 => source.js 5:64 foo"
+      ^        ^       ^    ^
+      │        │       │    └── the symbol name from the source file
+      │        │       │
+      │        │       └── the line:column position in the source file
+      │        │
+      │        └── the name of the source file
+      │
+      └── the column number of the output file
+
+  ]
+}
+```
+从上面的信息可以看到，一条(位置)映射包含6个信息：
+- 0 输出文件的行号
+- 231 输出文件的列号
+- source.js 源文件名
+- 5:64 源文件中的行列位置
+- foo 源文件中的符号名
+
+其中，输出文件的行号比较特殊，是通过分号(;)分隔的列表索引表示，其余的5部分信息是通过一个整数数组(1,4或5个元素)以Base64-VLQ的编码变成一个字符串，被称为一个`Segment`。而编码前的整数数组的元素被称为`Field`。
+
+各个`Field`的含义如下：
+
+- 第1个`Field`表示这个`Segment`所表示的输出文件中对应行的的起始列
+- 第2个`Field`表示`sources`数组的索引
+- 第3个`Field`表示源文件的起始行
+- 第4个`Field`表示源文件的起始列
+- 第5个`Field`表示`names`数组的索引
+
+这5部分信息通过Base64 VLQ编码
+
+![img_2.png](img_2.png)
