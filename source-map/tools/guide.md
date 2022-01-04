@@ -95,9 +95,9 @@ function add(n,u){return n+u}function sum(n){console.log(n.length);return n.redu
 > 如果加了 sourceMappingURL 之后还是报的`ouput.js`文件的错，那要看下开发工具是否启用了`SourceMap`。
 > 
 > 点开devtools右上角的设置
-> ![img_1.png](img_1.png)
+> ![img_1.png](assets/setting.png)
 > 打开如下面板：
-> ![img.png](img.png)
+> ![img.png](assets/sourcemap-switch.png)
 > 确认`Enable JavaScript source maps`选项是勾选的。
 
 
