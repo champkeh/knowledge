@@ -41,8 +41,8 @@ Promise.resolve().finally(() => {
 ```
 那么，最终的编译结果可以查看 [dist/index.js](assets/dist/v1/index.js) 和 [dist/foo.js](assets/dist/v1/foo.js) 的效果。
 
-![img.png](img.png)
-![img_1.png](img_1.png)
+![img.png](assets/images/preset-env-vs-runtime/img.png)
+![img_1.png](assets/images/preset-env-vs-runtime/img_1.png)
 
 观察上面的截图可知，每一个输出文件都内置了babel的一些helper，而这些helper代码其实都是一样的，可想而知最终的打包结果有多大！
 
@@ -69,8 +69,8 @@ Promise.resolve().finally(() => {
   ]
 }
 ```
-![img_2.png](img_2.png)
-![img_3.png](img_3.png)
+![img_2.png](assets/images/preset-env-vs-runtime/img_2.png)
+![img_3.png](assets/images/preset-env-vs-runtime/img_3.png)
 
 可以看到，此时结果中的helper代码都是引用的`@babel/runtime`包里面的代码。
 
@@ -104,7 +104,7 @@ Promise.resolve().finally(() => {
 ```
 我们告诉这个插件，所有的helper代码都采用`@babel/runtime-corejs3`的引用。
 编译结果如下：
-![img_4.png](img_4.png)
+![img_4.png](assets/images/preset-env-vs-runtime/img_4.png)
 可以发现，所有的helper代码都变成了`@babel/runtime-corejs3`包中的引用了，也就是说，`transform-runtime`这个插件的`corejs`选项决定了最终使用哪个包里面的`helper`代码。
 
 那这两个包里面的`helper`代码有什么区别呢？
