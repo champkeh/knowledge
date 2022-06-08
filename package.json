@@ -1,6 +1,7 @@
 {
   "name": "knowledge",
   "version": "1.0.0",
+  "private": true,
   "description": "这是一个个人知识管理的地方。",
   "main": "index.js",
   "scripts": {
