@@ -59,7 +59,7 @@ src or dst portrange 5000-8000 && tcp or ip6
 
 5. 指定网关
 ```
-gateway 192.168.1.1
+gateway 192.168.1.1 // 这句不合法，这里只是表示语义与下面相同
 ether host 192.168.1.1 and not host 192.168.1.1
 ```
 
@@ -74,8 +74,118 @@ tcp[13] & 4 == 4
 
 2. 抓取 HTTP GET 报文
 ```
+// 0x47455420 指的是 "GET "，也就是说TCP报文头部后面是"GET "字符串就表示GET请求
 port 80 and tcp[((tcp[12:1] & 0xF0) >> 4 * 4):4] == 0x47455420
 port 80 and tcp[((tcp[12:1] & 0xF0) * 4):4] == 0x47455420
 port 80 and tcp[((tcp[12:1] & 0xF0) >> 2):4] == 0x47455420
 ```
 > 对这个表达式的解释可以参考 https://security.stackexchange.com/questions/121011/wireshark-tcp-filter-tcptcp121-0xf0-24
+
+
+
+## Wireshark 显示过滤器
+
+### 过滤属性
+
+任何在报文细节面板中解析出的字段名，都可以作为过滤属性。
+例如，在报文细节面板中 TCP 协议头中的 Source Port，对应的过滤属性为 tcp.srcport
+
+在 View -> Internals -> Supported Protocols 面板中，可以看到各字段对应的属性名。
+![img_1.png](img_1.png)
+
+### 操作符
+
+| 英文       | 符号  | 描述  | 示例                      |
+|----------|-----|-----|-------------------------|
+| eq       | `==` | 等于  | ip.src == 10.0.0.5      |
+| ne       | `!=` | 不等于 | ip.src != 10.0.0.5      |
+| gt       | `>` | 大于 | frame.len > 10          |
+| lt       | `<` | 小于 | frame.len < 128         |
+| ge       | `>=` | 大于等于 | frame.len ge 0x100      |
+| le       | `<=` | 小于等于 | frame.len <= 0x20       |
+| contains |     | 包含 | sip.To contains "a1762" |
+| matches  | `~`  | 正则匹配 | host matches "acme\.(org)" |
+| bitwise_and | `&` | 位与操作 | tcp.flags & 0x02        |
+
+### 过滤值类型
+
+| 类型 | 描述                 | 示例                                               |
+|---|--------------------|--------------------------------------------------|
+| Unsigned integer | 无符号整型              | ip.len le 1500                                   |
+| Signed integer | 有符号整型              |                                                  |
+| Boolean | 布尔值                | tcp.flags.syn                                    |
+| Ethernet address | 以太网地址，以:-.分隔的6字节地址 | eth.dst == ff:ff:ff:ff:ff:ff                     |
+| IPv4 address | IPv4 地址            | ip.addr == 192.168.0.1                           |
+| IPv6 address | IPv6 地址            | ipv6.addr == ::1                                 |
+| Text string | 文本字符串              | http.request.uri == "https://www.wireshark.org/" |
+
+### 表达式之间的组合
+
+|英文 | 符号 | 描述 | 示例 |
+|---|---|---|---|
+| and | && | 逻辑与 | ip.src == 10.0.0.5 and tcp.flags.fin |
+| or | ||
+| xor | ^^ | 逻辑异或 | 
+| not | ! | 逻辑非 |
+| [...] | | 见 Slice 切片操作 |
+| in | | 见集合操作 |
+
+### 其他常见操作符
+
+1. 大括号{}集合操作符
+```
+tcp.port in {443 4430..4434}
+```
+等价于
+```
+tcp.port == 443 || (tcp.port >= 4430 && tcp.port <= 4434)
+```
+
+2. 中括号[]Slice切片操作符
+
+`[n:m]`表示 n 是起始偏移量，m 是切片长度
+```
+eth.src[0:3] == 00:00:83
+```
+
+`[n-m]`表示 n 是起始偏移量，m 是截止偏移量
+```
+eth.src[1-2] == 00:83
+```
+
+`[:m]`表示从开始处至 m 截止偏移量
+```
+eth.src[:4] == 00:00:83:00
+```
+
+`[m:]`表示 m 是起始偏移量，至字段结尾
+```
+eth.src[4:] == 20:20
+```
+
+`[m]`表示取偏移量 m 处的字节
+```
+eth.src[2] == 83
+```
+
+`[,]`使用逗号分隔时，允许以上方式同时出现
+```
+eth.src[0:3, 1-2, :4, 4:, 2] == 00:00:83:00:83:00:00:83:00:20:20:83
+```
+
+### 常用函数
+
+1. upper
+Converts a string field to uppercase
+
+2. lower
+Converts a string field to lowercase
+
+3. len
+Returns the byte length of a string or bytes field
+
+4. count
+Returns the number of field occurrences in a frame
+
+5. string
+Converts a non-string field to a string
