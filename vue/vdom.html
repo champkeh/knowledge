@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .red {
+            color: red;
+        }
+        .blue {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+<div id="app"></div>
+<button onclick="patch(vdom, vdom2)">patch</button>
+<script>
+    function h(tag, props, children) {
+        return {
+            tag,
+            props,
+            children
+        }
+    }
+
+    function mount(vnode, container) {
+        const el = vnode.el = document.createElement(vnode.tag)
+
+        // props
+        if (vnode.props) {
+            for (const [key, value] of Object.entries(vnode.props)) {
+                el.setAttribute(key, value)
+            }
+        }
+
+        // children
+        if (vnode.children) {
+            vnode.children.forEach(child => {
+                if (typeof child === 'string') {
+                    const text = document.createTextNode(child)
+                    el.appendChild(text)
+                } else {
+                    mount(child, el)
+                }
+            })
+        }
+
+        container.appendChild(el)
+    }
+
+    const vdom = h('div', { class: 'red' }, [
+        h('div', null, [
+            h('span', {class:'blue'}, ['world']),
+            'foo'
+        ])
+    ])
+
+    const vdom2 = h('main', { class: 'blue' }, [
+        h('div', null, [
+            'changed'
+        ])
+    ])
+
+    mount(vdom, document.getElementById('app'))
+
+    function patch(n1, n2) {
+        if (n1.tag === n2.tag) {
+            const el = n2.el = n1.el
+
+            // props
+            const oldProps = n1.props || {}
+            const newProps = n2.props || {}
+            for (const [key, newValue] of Object.entries(newProps)) {
+                const oldValue = oldProps[key]
+                if (newValue !== oldValue) {
+                    el.setAttribute(key, newValue)
+                }
+            }
+            for (const key in oldProps) {
+                if (!(key in newProps)) {
+                    el.removeAttribute(key)
+                }
+            }
+
+            // children
+            const oldChildren = n1.children
+            const newChildren = n2.children
+            if (typeof newChildren === 'string') {
+                if (typeof oldChildren === 'string') {
+                    if (newChildren !== oldChildren) {
+                        el.textContent = newChildren
+                    }
+                } else {
+                    el.textContent = newChildren
+                }
+            } else {
+                if (typeof oldChildren === 'string') {
+                    el.innerHTML = ''
+                    newChildren.forEach(child => {
+                        mount(child, el)
+                    })
+                } else {
+                    const commonLength = Math.min(newChildren.length, oldChildren.length)
+                    for (let i = 0; i < commonLength; i++) {
+                        patch(oldChildren[i], newChildren[i])
+                    }
+                    if (newChildren.length > oldChildren.length) {
+                        newChildren.slice(oldChildren.length).forEach(child => {
+                            mount(child, el)
+                        })
+                    } else if (newChildren.length < oldChildren.length) {
+                        oldChildren.slice(newChildren.length).forEach(child => {
+                            el.removeChild(child)
+                        })
+                    }
+                }
+            }
+
+        } else {
+            // replace
+            // mount(n2, document.getElementById('app'))
+        }
+    }
+
+    // patch(vdom, vdom2)
+</script>
+</body>
+</html>
