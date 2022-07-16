@@ -65,7 +65,7 @@ ether host 192.168.1.1 and not host 192.168.1.1
 
 ### 基于协议域过滤
 
-![img.png](img.png)
+![TCP报文格式](assets/tcp-packet-format.png)
 
 1. 捕获所有 TCP 中的 RST 报文
 ```
@@ -81,8 +81,6 @@ port 80 and tcp[((tcp[12:1] & 0xF0) >> 2):4] == 0x47455420
 ```
 > 对这个表达式的解释可以参考 https://security.stackexchange.com/questions/121011/wireshark-tcp-filter-tcptcp121-0xf0-24
 
-
-
 ## Wireshark 显示过滤器
 
 ### 过滤属性
@@ -91,7 +89,7 @@ port 80 and tcp[((tcp[12:1] & 0xF0) >> 2):4] == 0x47455420
 例如，在报文细节面板中 TCP 协议头中的 Source Port，对应的过滤属性为 tcp.srcport
 
 在 View -> Internals -> Supported Protocols 面板中，可以看到各字段对应的属性名。
-![img_1.png](img_1.png)
+![Wireshark显示过滤器属性](assets/wireshark-filter-field.png)
 
 ### 操作符
 
@@ -189,3 +187,120 @@ Returns the number of field occurrences in a frame
 
 5. string
 Converts a non-string field to a string
+
+
+
+## 设计哲学
+
+在 Web 约束下暴露 TCP 给上层
+
+1. 元数据去哪了？
+由 WebSocket 传输的应用层存放元数据
+
+2. 基于帧(frame)，而不是基于流(stream)(http/tcp)
+每一帧要么承载字符数据，要么承载二进制数据
+
+3. 基于浏览器的同源策略模型
+可以使用 Access-Control-All-Origin 等头部
+
+4. 基于 URI、子协议支持同主机同端口上的多个服务
+
+
+## 协议格式
+
+![帧格式](assets/frame-format.png)
+
+![2个字节的帧头部](assets/frame-header.png)
+
+### 帧类型`opcode`
+
+- 持续帧
+  - 0: 继续前一帧
+- 非控制帧(数据帧)
+  - 1: 文本帧(UTF-8)
+  - 2: 二进制帧
+  - 3-7: 为非控制帧保留
+- 控制帧
+  - 8: 关闭帧
+  - 9: 心跳帧 ping
+  - A: 心跳帧 pong
+  - B-F: 为控制帧保留
+
+
+## 握手
+
+### URI 格式
+
+- ws-URI = `"ws:" "//" host [":" port] path ["?" query]`
+  - 默认 port 端口 80
+- wss-URI = `"wss:" "//" host [":" port] path ["?" query]`
+  - 默认 port 端口 443
+- 客户端提供的信息
+  - host 与 port: 主机名与端口
+  - schema: 是否基于 SSL
+  - 访问资源: URI
+  - 握手随机数: Sec-WebSocket-Key
+  - 选择子协议: Sec-WebSocket-Protocol
+  - 扩展协议: Sec-WebSocket-Extensions
+  - CORS 跨域: Origin
+
+### 建立握手
+
+![handshake](assets/handshake.png)
+
+### 如何证明握手被服务器接受？
+
+1. 请求中的`Sec-WebSocket-Key`随机数
+
+```
+Sec-WebSocket-Key: kGt1gEywO7kgdrz62ZYFBw==
+```
+
+2. 响应中的`Sec-WebSocket-Accept`证明值
+
+```
+// 算法
+GUID = 258EAFA5-E914-47DA-95CA-C5AB0DC85B11
+const accept = base64(sha1(Sec-WebSocket-Key + GUID))
+
+拼接值: kGt1gEywO7kgdrz62ZYFBw==258EAFA5-E914-47DA-95CA-C5AB0DC85B11
+SHA1值: 8f00d67299e45c41601ca9e2fd3d02008e76a51d
+BASE64值: jwDWcpnkXEFgHKni/T0CAI52pR0=
+Sec-WebSocket-Accept: jwDWcpnkXEFgHKni/T0CAI52pR0=
+```
+
+### 消息(message)与数据帧(frame)
+
+- Message 消息
+  - 1条消息由1个或者多个帧组成，这些数据帧属于同一类型
+  - 代理服务器可能合并、拆分消息的数据帧
+- Frame 数据帧
+  - 持续帧
+  - 文本帧、二进制帧
+
+### 非控制帧的消息分片：有序
+
+![消息分片](assets/frame-slice.png)
+
+消息帧中间可以插入控制帧。
+
+### 数据帧格式：消息内容的长度
+
+![消息内容长度](assets/frame-len.png)
+
+### 掩码处理
+
+![掩码处理](assets/frame-mask.png)
+
+
+### 心跳帧
+
+![心跳帧](assets/heartbeat-frame.png)
+
+### 关闭帧
+
+![关闭帧](assets/close-frame.png)
+
+### 关闭帧的错误码
+
+![关闭帧的错误码](assets/closecode.png)
