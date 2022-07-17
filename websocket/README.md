@@ -301,6 +301,17 @@ Sec-WebSocket-Accept: jwDWcpnkXEFgHKni/T0CAI52pR0=
 
 ![关闭帧](assets/close-frame.png)
 
+### 关闭会话的方式
+
+- 控制帧中的关闭帧：在 TCP 连接之上的双向关闭
+  - 发送关闭帧之后，不能再发送任何数据
+  - 在接收到关闭帧之后，不再接收任何到达的数据
+- TCP 连接的意外中断
+
+一旦发送或者接收到关闭帧，连接处于 CLOSING 状态
+一旦发送了关闭帧，并且接收到了关闭帧，连接处于 CLOSED 状态
+TCP 连接关闭后，WebSocket 连接才算完全被关闭
+
 ### 关闭帧的错误码
 
 ![关闭帧的错误码](assets/closecode.png)
