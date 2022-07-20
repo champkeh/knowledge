@@ -315,3 +315,8 @@ TCP 连接关闭后，WebSocket 连接才算完全被关闭
 ### 关闭帧的错误码
 
 ![关闭帧的错误码](assets/closecode.png)
+
+
+## 其他参考文章
+
+- [Configuring & Optimizing WebSocket Compression](https://www.igvita.com/2013/11/27/configuring-and-optimizing-websocket-compression/)
