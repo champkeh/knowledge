@@ -5,6 +5,8 @@
   "description": "这是一个个人知识管理的地方。",
   "main": "index.js",
   "scripts": {
+    "dev": "ENV=dev node code/demo.js",
+    "uat": "ENV=uat node code/demo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +22,7 @@
   "homepage": "https://github.com/champkeh/knowledge#readme",
   "dependencies": {
     "concat-stream": "^2.0.0",
+    "serialize-javascript": "^6.0.0",
     "vlq": "^2.0.4"
   }
 }
