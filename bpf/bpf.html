@@ -1,0 +1,1284 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Wed Aug 31 07:25:53 2022 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       .top {
+           display: flex;
+           justify-content: space-between;
+       }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title></title>
+</head>
+<body>
+
+<hr>
+
+
+<p valign="top" class="top"><span>BPF(4)</span><span>BSD Kernel Interfaces Manual</span><span>BPF(4)</span></p>
+
+<p style="margin-top: 1em" valign="top"><b>NAME</b></p>
+
+<p style="margin-left:8%;"><b>bpf</b> &mdash; Berkeley
+Packet Filter</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>SYNOPSIS</b></p>
+
+<p style="margin-left:17%;"><b>pseudo-device bpf</b></p>
+
+
+<p style="margin-top: 1em" valign="top"><b>DESCRIPTION</b></p>
+
+<p style="margin-left:8%;">The Berkeley Packet Filter
+provides a raw interface to data link layers in a protocol
+independent fashion. All packets on the network, even those
+destined for other hosts, are accessible through this
+mechanism.</p>
+
+<p style="margin-left:8%; margin-top: 1em">The packet
+filter appears as a character special device,
+<i>/dev/bpf0</i>, <i>/dev/bpf1</i>, etc. After opening the
+device, the file descriptor must be bound to a specific
+network interface with the BIOCSETIF ioctl. A given
+interface can be shared by multiple listeners, and the
+filter underlying each descriptor will see an identical
+packet stream.</p>
+
+<p style="margin-left:8%; margin-top: 1em">A separate
+device file is required for each minor device. If a file is
+in use, the open will fail and <i>errno</i> will be set to
+EBUSY.</p>
+
+<p style="margin-left:8%; margin-top: 1em">Associated with
+each open instance of a <b>bpf</b> file is a user-settable
+packet filter. Whenever a packet is received by an
+interface, all file descriptors listening on that interface
+apply their filter. Each descriptor that accepts the packet
+receives its own copy.</p>
+
+<p style="margin-left:8%; margin-top: 1em">Reads from these
+files return the next group of packets that have matched the
+filter. To improve performance, the buffer passed to read
+must be the same size as the buffers used internally by
+<b>bpf</b>. This size is returned by the BIOCGBLEN ioctl
+(see below), and can be set with BIOCSBLEN. Note that an
+individual packet larger than this size is necessarily
+truncated.</p>
+
+<p style="margin-left:8%; margin-top: 1em">A packet can be
+sent out on the network by writing to a <b>bpf</b> file
+descriptor. The writes are unbuffered, meaning only one
+packet can be processed per write. Currently, only writes to
+Ethernets and SLIP links are supported.</p>
+
+<p style="margin-left:8%; margin-top: 1em">When the last
+minor device is opened, an additional minor device is
+created on demand. The maximum number of devices that can be
+created is controlled by the sysctl
+debug.bpf_maxdevices.</p>
+
+<p style="margin-top: 1em" valign="top"><b>IOCTLS</b></p>
+
+<p style="margin-left:8%;">The ioctl(2) command codes below
+are defined in &lang;<i>net/bpf.h</i>&rang;. All commands
+require these includes:</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">#include &lt;sys/types.h&gt;</p></td>
+<td width="68%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">#include &lt;sys/time.h&gt;</p></td>
+<td width="68%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">#include &lt;sys/ioctl.h&gt;</p></td>
+<td width="68%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">#include &lt;net/bpf.h&gt;</p></td>
+<td width="68%">
+</td>
+</table>
+
+<p style="margin-left:8%; margin-top: 1em">Additionally,
+BIOCGETIF and BIOCSETIF require
+&lang;<i>sys/socket.h</i>&rang; and
+&lang;<i>net/if.h</i>&rang;.</p>
+
+<p style="margin-left:8%; margin-top: 1em">The (third)
+argument to ioctl(2) should be a pointer to the type
+indicated.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCGBLEN</p>
+
+<p style="margin-left:31%; margin-top: 1em">(u_int) Returns
+the required buffer length for reads on <b>bpf</b>
+files.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCSBLEN</p>
+
+<p style="margin-left:31%; margin-top: 1em">(u_int) Sets
+the buffer length for reads on <b>bpf</b> files. The buffer
+must be set before the file is attached to an interface with
+BIOCSETIF. If the requested buffer size cannot be
+accommodated, the closest allowable size will be set and
+returned in the argument. A read call will result in EINVAL
+if it is passed a buffer that is not this size.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCGDLT</p>
+
+<p style="margin-left:31%; margin-top: 1em">(u_int) Returns
+the type of the data link layer underlying the attached
+interface. EINVAL is returned if no interface has been
+specified. The device types, prefixed with
+&lsquo;&lsquo;DLT_&rsquo;&rsquo;, are defined in
+&lang;<i>net/bpf.h</i>&rang;.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCGDLTLIST</p>
+
+<p style="margin-left:31%; margin-top: 1em">(struct
+bpf_dltlist) Returns an array of the available types of the
+data link layer underlying the attached interface:</p>
+
+<p style="margin-left:40%; margin-top: 1em">struct
+bpf_dltlist {</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="52%"></td>
+<td width="48%">
+
+
+<p valign="top">u_int bfl_len;</p></td>
+<tr valign="top" align="left">
+<td width="52%"></td>
+<td width="48%">
+
+
+<p valign="top">u_int *bfl_list;</p></td>
+</table>
+
+<p style="margin-left:40%;">};</p>
+
+<p style="margin-left:31%; margin-top: 1em">The available
+types are returned in the array pointed to by the
+<i>bfl_list</i> field while their length in u_int is
+supplied to the <i>bfl_len</i> field. ENOMEM is returned if
+there is not enough buffer space and EFAULT is returned if a
+bad address is encountered. The <i>bfl_len</i> field is
+modified on return to indicate the actual length in u_int of
+the array returned. If <i>bfl_list</i> is NULL, the
+<i>bfl_len</i> field is set to indicate the required length
+of an array in u_int.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCSDLT</p>
+
+<p style="margin-left:31%; margin-top: 1em">(u_int) Changes
+the type of the data link layer underlying the attached
+interface. EINVAL is returned if no interface has been
+specified or the specified type is not available for the
+interface.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCPROMISC</p>
+
+<p style="margin-left:31%; margin-top: 1em">Forces the
+interface into promiscuous mode. All packets, not just those
+destined for the local host, are processed. Since more than
+one file can be listening on a given interface, a listener
+that opened its interface non-promiscuously may receive
+packets promiscuously. This problem can be remedied with an
+appropriate filter.</p>
+
+<p style="margin-left:31%; margin-top: 1em">The interface
+remains in promiscuous mode until all files listening
+promiscuously are closed.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCFLUSH</p>
+
+<p style="margin-left:31%; margin-top: 1em">Flushes the
+buffer of incoming packets, and resets the statistics that
+are returned by BIOCGSTATS.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCGETIF</p>
+
+<p style="margin-left:31%; margin-top: 1em">(struct ifreq)
+Returns the name of the hardware interface that the file is
+listening on. The name is returned in the ifr_name field of
+the ifreq structure. All other fields are undefined.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCSETIF</p>
+
+<p style="margin-left:31%; margin-top: 1em">(struct ifreq)
+Sets the hardware interface associated with the file. This
+command must be performed before any packets can be read.
+The device is indicated by name using the ifr_name field of
+the ifreq structure. Additionally, performs the actions of
+BIOCFLUSH.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCSRTIMEOUT <br>
+BIOCGRTIMEOUT</p>
+
+<p style="margin-left:31%; margin-top: 1em">(struct
+timeval) Sets or gets the read timeout parameter. The
+argument specifies the length of time to wait before timing
+out on a read request. This parameter is initialized to zero
+by open(2), indicating no timeout.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCGSTATS</p>
+
+<p style="margin-left:31%; margin-top: 1em">(struct
+bpf_stat) Returns the following structure of packet
+statistics:</p>
+
+<p style="margin-left:31%; margin-top: 1em">struct bpf_stat
+{</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="43%"></td>
+<td width="57%">
+
+
+<p valign="top">u_int bs_recv; /* number of packets
+received */</p></td>
+<tr valign="top" align="left">
+<td width="43%"></td>
+<td width="57%">
+
+
+<p valign="top">u_int bs_drop; /* number of packets dropped
+*/</p> </td>
+</table>
+
+<p style="margin-left:31%;">};</p>
+
+<p style="margin-left:31%; margin-top: 1em">The fields
+are:</p>
+
+<p style="margin-top: 1em" valign="top">bs_recv</p>
+
+<p style="margin-left:52%;">the number of packets received
+by the descriptor since opened or reset (including any
+buffered since the last read call); and</p>
+
+<p style="margin-top: 1em" valign="top">bs_drop</p>
+
+<p style="margin-left:52%;">the number of packets which
+were accepted by the filter but dropped by the kernel
+because of buffer overflows (i.e., the application&rsquo;s
+reads aren&rsquo;t keeping up with the packet traffic).</p>
+
+<p style="margin-top: 1em" valign="top">BIOCIMMEDIATE</p>
+
+<p style="margin-left:31%; margin-top: 1em">(u_int) Enables
+or disables &lsquo;&lsquo;immediate mode&rsquo;&rsquo;,
+based on the truth value of the argument. When immediate
+mode is enabled, reads return immediately upon packet
+reception. Otherwise, a read will block until either the
+kernel buffer becomes full or a timeout occurs. This is
+useful for programs like rarpd(8) which must respond to
+messages in real time. The default for a new file is
+off.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCSETF <br>
+BIOCSETFNR</p>
+
+<p style="margin-left:31%; margin-top: 1em">(struct
+bpf_program) Sets the filter program used by the kernel to
+discard uninteresting packets. An array of instructions and
+its length is passed in using the following structure:</p>
+
+<p style="margin-left:31%; margin-top: 1em">struct
+bpf_program {</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="43%"></td>
+<td width="57%">
+
+
+<p valign="top">u_int bf_len;</p></td>
+<tr valign="top" align="left">
+<td width="43%"></td>
+<td width="57%">
+
+
+<p valign="top">struct bpf_insn *bf_insns;</p></td>
+</table>
+
+<p style="margin-left:31%;">};</p>
+
+<p style="margin-left:31%; margin-top: 1em">The filter
+program is pointed to by the bf_insns field while its length
+in units of &lsquo;struct bpf_insn&rsquo; is given by the
+bf_len field. Also, the actions of BIOCFLUSH are performed.
+See section <i>FILTER MACHINE</i> for an explanation of the
+filter language. The only difference between BIOCSETF and
+BIOCSETFNR is BIOCSETF performs the actions of BIOCFLUSH
+while BIOCSETFNR does not.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCVERSION</p>
+
+<p style="margin-left:31%; margin-top: 1em">(struct
+bpf_version) Returns the major and minor version numbers of
+the filter language currently recognized by the kernel.
+Before installing a filter, applications must check that the
+current version is compatible with the running kernel.
+Version numbers are compatible if the major numbers match
+and the application minor is less than or equal to the
+kernel minor. The kernel version number is returned in the
+following structure:</p>
+
+<p style="margin-left:31%; margin-top: 1em">struct
+bpf_version {</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="43%"></td>
+<td width="57%">
+
+
+<p valign="top">u_short bv_major;</p></td>
+<tr valign="top" align="left">
+<td width="43%"></td>
+<td width="57%">
+
+
+<p valign="top">u_short bv_minor;</p></td>
+</table>
+
+<p style="margin-left:31%;">};</p>
+
+<p style="margin-left:31%; margin-top: 1em">The current
+version numbers are given by BPF_MAJOR_VERSION and
+BPF_MINOR_VERSION from &lang;<i>net/bpf.h</i>&rang;. An
+incompatible filter may result in undefined behavior (most
+likely, an error returned by <b>ioctl</b>() or haphazard
+packet matching).</p>
+
+<p style="margin-top: 1em" valign="top">BIOCSHDRCMPLT <br>
+BIOCGHDRCMPLT</p>
+
+<p style="margin-left:31%; margin-top: 1em">(u_int) Sets or
+gets the status of the &lsquo;&lsquo;header
+complete&rsquo;&rsquo; flag. Set to zero if the link level
+source address should be filled in automatically by the
+interface output routine. Set to one if the link level
+source address will be written, as provided, to the wire.
+This flag is initialized to zero by default.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCSSEESENT <br>
+BIOCGSEESENT</p>
+
+<p style="margin-left:31%; margin-top: 1em">(u_int) Sets or
+gets the flag determining whether locally generated packets
+on the interface should be returned by BPF. Set to zero to
+see only incoming packets on the interface. Set to one to
+see packets originating locally and remotely on the
+interface. This flag is initialized to one by default.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCGRSIG</p>
+
+<p style="margin-left:31%; margin-top: 1em">(u_int) Returns
+the signal that will be sent to a process waiting on the bpf
+descriptor upon packet reception. The default is SIGIO.</p>
+
+<p style="margin-top: 1em" valign="top">BIOCSRSIG</p>
+
+<p style="margin-left:31%; margin-top: 1em">(u_int) Sets
+the signal that should be sent to a process waiting on bpf
+descriptor upon packet reception. The default is SIGIO.</p>
+
+<p style="margin-top: 1em" valign="top"><b>STANDARD
+IOCTLS</b></p>
+
+<p style="margin-left:8%;"><b>bpf</b> now supports several
+standard ioctl(2)&rsquo;s which allow the user to do
+non-blocking I/O to an open <b>bpf</b> file descriptor.</p>
+
+<p style="margin-top: 1em" valign="top">FIONREAD</p>
+
+<p style="margin-left:28%; margin-top: 1em">(int) Returns
+the number of bytes that are immediately available for
+reading.</p>
+
+<p style="margin-top: 1em" valign="top">SIOCGIFADDR</p>
+
+<p style="margin-left:28%; margin-top: 1em">(struct ifreq)
+Returns the address associated with the interface.</p>
+
+<p style="margin-top: 1em" valign="top"><b>BPF
+HEADER</b></p>
+
+<p style="margin-left:8%;">The following structure is
+prepended to each packet returned by read(2):</p>
+
+<p style="margin-left:8%; margin-top: 1em">struct bpf_hdr
+{</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">struct BPF_TIMEVAL bh_tstamp; /* time stamp
+*/</p> </td>
+<td width="13%"></td>
+<td width="12%"></td>
+<td width="12%"></td>
+<td width="13%"></td>
+<td width="18%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">bpf_u_int32 bh_caplen; /* length of
+captured portion */</p></td>
+<td width="13%"></td>
+<td width="12%"></td>
+<td width="12%"></td>
+<td width="13%"></td>
+<td width="18%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">bpf_u_int32 bh_datalen; /* original length
+of packet */</p></td>
+<td width="13%"></td>
+<td width="12%"></td>
+<td width="12%"></td>
+<td width="13%"></td>
+<td width="18%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">u_short bh_hdrlen; /* length of bpf header
+(this struct</p></td>
+<td width="13%"></td>
+<td width="12%"></td>
+<td width="12%"></td>
+<td width="13%"></td>
+<td width="18%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+</td>
+<td width="13%">
+</td>
+<td width="12%">
+</td>
+<td width="12%">
+</td>
+<td width="13%">
+
+
+<p valign="top">plus alignment padding */</p></td>
+<td width="18%">
+</td>
+</table>
+
+<p style="margin-left:8%;">};</p>
+
+<p style="margin-left:8%; margin-top: 1em">The fields,
+whose values are stored in host order, are:</p>
+
+<p style="margin-top: 1em" valign="top">bh_tstamp</p>
+
+<p style="margin-left:26%; margin-top: 1em">The time at
+which the packet was processed by the packet filter.</p>
+
+<p valign="top">bh_caplen</p>
+
+<p style="margin-left:26%; margin-top: 1em">The length of
+the captured portion of the packet. This is the minimum of
+the truncation amount specified by the filter and the length
+of the packet.</p>
+
+<p valign="top">bh_datalen</p>
+
+<p style="margin-left:26%; margin-top: 1em">The length of
+the packet off the wire. This value is independent of the
+truncation amount specified by the filter.</p>
+
+<p valign="top">bh_hdrlen</p>
+
+<p style="margin-left:26%; margin-top: 1em">The length of
+the <b>bpf</b> header, which may not be equal to
+<b>sizeof</b>(<i>struct bpf_hdr</i>).</p>
+
+<p style="margin-left:8%; margin-top: 1em">The bh_hdrlen
+field exists to account for padding between the header and
+the link level protocol. The purpose here is to guarantee
+proper alignment of the packet data structures, which is
+required on alignment sensitive architectures and improves
+performance on many other architectures. The packet filter
+insures that the bpf_hdr and the network layer header will
+be word aligned. Suitable precautions must be taken when
+accessing the link layer protocol fields on alignment
+restricted machines. (This isn&rsquo;t a problem on an
+Ethernet, since the type field is a short falling on an even
+offset, and the addresses are probably accessed in a
+bytewise fashion).</p>
+
+<p style="margin-left:8%; margin-top: 1em">Additionally,
+individual packets are padded so that each starts on a word
+boundary. This requires that an application has some
+knowledge of how to get from packet to packet. The macro
+BPF_WORDALIGN is defined in &lang;<i>net/bpf.h</i>&rang; to
+facilitate this process. It rounds up its argument to the
+nearest word aligned value (where a word is BPF_ALIGNMENT
+bytes wide).</p>
+
+<p style="margin-left:8%; margin-top: 1em">For example, if
+&lsquo;p&rsquo; points to the start of a packet, this
+expression will advance it to the next packet:</p>
+
+<p style="margin-left:17%;">p = (char *)p +
+BPF_WORDALIGN(p-&gt;bh_hdrlen + p-&gt;bh_caplen)</p>
+
+<p style="margin-left:8%; margin-top: 1em">For the
+alignment mechanisms to work properly, the buffer passed to
+read(2) must itself be word aligned. The malloc(3) function
+will always return an aligned buffer.</p>
+
+<p style="margin-top: 1em" valign="top"><b>FILTER
+MACHINE</b></p>
+
+<p style="margin-left:8%;">A filter program is an array of
+instructions, with all branches forwardly directed,
+terminated by a <i>return</i> instruction. Each instruction
+performs some action on the pseudo-machine state, which
+consists of an accumulator, index register, scratch memory
+store, and implicit program counter.</p>
+
+<p style="margin-left:8%; margin-top: 1em">The following
+structure defines the instruction format:</p>
+
+<p style="margin-left:8%; margin-top: 1em">struct bpf_insn
+{</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">u_short code;</p></td>
+<td width="68%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">u_char jt;</p></td>
+<td width="68%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">u_char jf;</p></td>
+<td width="68%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">bpf_u_int32 k;</p></td>
+<td width="68%">
+</td>
+</table>
+
+<p style="margin-left:8%;">};</p>
+
+<p style="margin-left:8%; margin-top: 1em">The k field is
+used in different ways by different instructions, and the jt
+and jf fields are used as offsets by the branch
+instructions. The opcodes are encoded in a semi-hierarchical
+fashion. There are eight classes of instructions: BPF_LD,
+BPF_LDX, BPF_ST, BPF_STX, BPF_ALU, BPF_JMP, BPF_RET, and
+BPF_MISC. Various other mode and operator bits are
+or&rsquo;d into the class to give the actual instructions.
+The classes and modes are defined in
+&lang;<i>net/bpf.h</i>&rang;.</p>
+
+<p style="margin-left:8%; margin-top: 1em">Below are the
+semantics for each defined <b>bpf</b> instruction. We use
+the convention that A is the accumulator, X is the index
+register, P[] packet data, and M[] scratch memory store.
+P[i:n] gives the data at byte offset
+&lsquo;&lsquo;i&rsquo;&rsquo; in the packet, interpreted as
+a word (n=4), unsigned halfword (n=2), or unsigned byte
+(n=1). M[i] gives the i&rsquo;th word in the scratch memory
+store, which is only addressed in word units. The memory
+store is indexed from 0 to BPF_MEMWORDS - 1. k, jt, and jf
+are the corresponding fields in the instruction definition.
+&lsquo;&lsquo;len&rsquo;&rsquo; refers to the length of the
+packet.</p>
+
+<p style="margin-top: 1em" valign="top">BPF_LD</p>
+
+<p style="margin-left:23%; margin-top: 1em">These
+instructions copy a value into the accumulator. The type of
+the source operand is specified by an
+&lsquo;&lsquo;addressing mode&rsquo;&rsquo; and can be a
+constant (BPF_IMM), packet data at a fixed offset (BPF_ABS),
+packet data at a variable offset (BPF_IND), the packet
+length (BPF_LEN), or a word in the scratch memory store
+(BPF_MEM). For BPF_IND and BPF_ABS, the data size must be
+specified as a word (BPF_W), halfword (BPF_H), or byte
+(BPF_B). The semantics of all the recognized BPF_LD
+instructions follow.</p>
+
+
+<p style="margin-top: 1em" valign="top">BPF_LD+BPF_W+BPF_ABS</p>
+
+<p style="margin-left:57%; margin-top: 1em">A &lt;-
+P[k:4]</p>
+
+<p valign="top">BPF_LD+BPF_H+BPF_ABS</p>
+
+<p style="margin-left:57%; margin-top: 1em">A &lt;-
+P[k:2]</p>
+
+<p valign="top">BPF_LD+BPF_B+BPF_ABS</p>
+
+<p style="margin-left:57%; margin-top: 1em">A &lt;-
+P[k:1]</p>
+
+<p valign="top">BPF_LD+BPF_W+BPF_IND</p>
+
+<p style="margin-left:57%; margin-top: 1em">A &lt;-
+P[X+k:4]</p>
+
+<p valign="top">BPF_LD+BPF_H+BPF_IND</p>
+
+<p style="margin-left:57%; margin-top: 1em">A &lt;-
+P[X+k:2]</p>
+
+<p valign="top">BPF_LD+BPF_B+BPF_IND</p>
+
+<p style="margin-left:57%; margin-top: 1em">A &lt;-
+P[X+k:1]</p>
+
+<p valign="top">BPF_LD+BPF_W+BPF_LEN</p>
+
+<p style="margin-left:57%; margin-top: 1em">A &lt;- len</p>
+
+<p valign="top">BPF_LD+BPF_IMM</p>
+
+<p style="margin-left:57%; margin-top: 1em">A &lt;- k</p>
+
+<p valign="top">BPF_LD+BPF_MEM</p>
+
+<p style="margin-left:57%; margin-top: 1em">A &lt;-
+M[k]</p>
+
+<p style="margin-top: 1em" valign="top">BPF_LDX</p>
+
+<p style="margin-left:23%; margin-top: 1em">These
+instructions load a value into the index register. Note that
+the addressing modes are more restrictive than those of the
+accumulator loads, but they include BPF_MSH, a hack for
+efficiently loading the IP header length.</p>
+
+
+<p style="margin-top: 1em" valign="top">BPF_LDX+BPF_W+BPF_IMM</p>
+
+<p style="margin-left:58%; margin-top: 1em">X &lt;- k</p>
+
+<p valign="top">BPF_LDX+BPF_W+BPF_MEM</p>
+
+<p style="margin-left:58%; margin-top: 1em">X &lt;-
+M[k]</p>
+
+<p valign="top">BPF_LDX+BPF_W+BPF_LEN</p>
+
+<p style="margin-left:58%; margin-top: 1em">X &lt;- len</p>
+
+<p valign="top">BPF_LDX+BPF_B+BPF_MSH</p>
+
+<p style="margin-left:58%; margin-top: 1em">X &lt;-
+4*(P[k:1]&amp;0xf)</p>
+
+<p style="margin-top: 1em" valign="top">BPF_ST</p>
+
+<p style="margin-left:23%; margin-top: 1em">This
+instruction stores the accumulator into the scratch memory.
+We do not need an addressing mode since there is only one
+possibility for the destination.</p>
+
+<p style="margin-top: 1em" valign="top">BPF_ST</p>
+
+<p style="margin-left:35%; margin-top: 1em">M[k] &lt;-
+A</p>
+
+<p style="margin-top: 1em" valign="top">BPF_STX</p>
+
+<p style="margin-left:23%; margin-top: 1em">This
+instruction stores the index register in the scratch memory
+store.</p>
+
+<p style="margin-top: 1em" valign="top">BPF_STX</p>
+
+<p style="margin-left:37%; margin-top: 1em">M[k] &lt;-
+X</p>
+
+<p style="margin-top: 1em" valign="top">BPF_ALU</p>
+
+<p style="margin-left:23%; margin-top: 1em">The alu
+instructions perform operations between the accumulator and
+index register or constant, and store the result back in the
+accumulator. For binary operations, a source mode is
+required (BPF_K or BPF_X).</p>
+
+
+<p style="margin-top: 1em" valign="top">BPF_ALU+BPF_ADD+BPF_K</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A +
+k</p>
+
+<p valign="top">BPF_ALU+BPF_SUB+BPF_K</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A -
+k</p>
+
+<p valign="top">BPF_ALU+BPF_MUL+BPF_K</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A *
+k</p>
+
+<p valign="top">BPF_ALU+BPF_DIV+BPF_K</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A /
+k</p>
+
+<p valign="top">BPF_ALU+BPF_AND+BPF_K</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A &amp;
+k</p>
+
+<p valign="top">BPF_ALU+BPF_OR+BPF_K</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A |
+k</p>
+
+<p valign="top">BPF_ALU+BPF_LSH+BPF_K</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A
+&lt;&lt; k</p>
+
+<p valign="top">BPF_ALU+BPF_RSH+BPF_K</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A
+&gt;&gt; k</p>
+
+<p valign="top">BPF_ALU+BPF_ADD+BPF_X</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A +
+X</p>
+
+<p valign="top">BPF_ALU+BPF_SUB+BPF_X</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A -
+X</p>
+
+<p valign="top">BPF_ALU+BPF_MUL+BPF_X</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A *
+X</p>
+
+<p valign="top">BPF_ALU+BPF_DIV+BPF_X</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A /
+X</p>
+
+<p valign="top">BPF_ALU+BPF_AND+BPF_X</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A &amp;
+X</p>
+
+<p valign="top">BPF_ALU+BPF_OR+BPF_X</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A |
+X</p>
+
+<p valign="top">BPF_ALU+BPF_LSH+BPF_X</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A
+&lt;&lt; X</p>
+
+<p valign="top">BPF_ALU+BPF_RSH+BPF_X</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- A
+&gt;&gt; X</p>
+
+<p valign="top">BPF_ALU+BPF_NEG</p>
+
+<p style="margin-left:58%; margin-top: 1em">A &lt;- -A</p>
+
+<p style="margin-top: 1em" valign="top">BPF_JMP</p>
+
+<p style="margin-left:23%; margin-top: 1em">The jump
+instructions alter flow of control. Conditional jumps
+compare the accumulator against a constant (BPF_K) or the
+index register (BPF_X). If the result is true (or non-zero),
+the true branch is taken, otherwise the false branch is
+taken. Jump offsets are encoded in 8 bits so the longest
+jump is 256 instructions. However, the jump always (BPF_JA)
+opcode uses the 32 bit k field as the offset, allowing
+arbitrarily distant destinations. All conditionals use
+unsigned comparison conventions.</p>
+
+<p style="margin-top: 1em" valign="top">BPF_JMP+BPF_JA</p>
+
+<p style="margin-left:60%; margin-top: 1em">pc += k</p>
+
+<p valign="top">BPF_JMP+BPF_JGT+BPF_K</p>
+
+<p style="margin-left:60%; margin-top: 1em">pc += (A &gt;
+k) ? jt : jf</p>
+
+<p valign="top">BPF_JMP+BPF_JGE+BPF_K</p>
+
+<p style="margin-left:60%; margin-top: 1em">pc += (A &gt;=
+k) ? jt : jf</p>
+
+<p valign="top">BPF_JMP+BPF_JEQ+BPF_K</p>
+
+<p style="margin-left:60%; margin-top: 1em">pc += (A == k)
+? jt : jf</p>
+
+<p valign="top">BPF_JMP+BPF_JSET+BPF_K</p>
+
+<p style="margin-left:60%; margin-top: 1em">pc += (A &amp;
+k) ? jt : jf</p>
+
+<p valign="top">BPF_JMP+BPF_JGT+BPF_X</p>
+
+<p style="margin-left:60%; margin-top: 1em">pc += (A &gt;
+X) ? jt : jf</p>
+
+<p valign="top">BPF_JMP+BPF_JGE+BPF_X</p>
+
+<p style="margin-left:60%; margin-top: 1em">pc += (A &gt;=
+X) ? jt : jf</p>
+
+<p valign="top">BPF_JMP+BPF_JEQ+BPF_X</p>
+
+<p style="margin-left:60%; margin-top: 1em">pc += (A == X)
+? jt : jf</p>
+
+<p valign="top">BPF_JMP+BPF_JSET+BPF_X</p>
+
+<p style="margin-left:60%; margin-top: 1em">pc += (A &amp;
+X) ? jt : jf</p>
+
+<p style="margin-top: 1em" valign="top">BPF_RET</p>
+
+<p style="margin-left:23%; margin-top: 1em">The return
+instructions terminate the filter program and specify the
+amount of packet to accept (i.e., they return the truncation
+amount). A return value of zero indicates that the packet
+should be ignored. The return value is either a constant
+(BPF_K) or the accumulator (BPF_A).</p>
+
+<p style="margin-top: 1em" valign="top">BPF_RET+BPF_A</p>
+
+<p style="margin-left:46%; margin-top: 1em">accept A
+bytes</p>
+
+<p valign="top">BPF_RET+BPF_K</p>
+
+<p style="margin-left:46%; margin-top: 1em">accept k
+bytes</p>
+
+<p style="margin-top: 1em" valign="top">BPF_MISC</p>
+
+<p style="margin-left:23%; margin-top: 1em">The
+miscellaneous category was created for anything that
+doesn&rsquo;t fit into the above classes, and for any new
+instructions that might need to be added. Currently, these
+are the register transfer instructions that copy the index
+register to the accumulator or vice versa.</p>
+
+
+<p style="margin-top: 1em" valign="top">BPF_MISC+BPF_TAX</p>
+
+<p style="margin-left:51%; margin-top: 1em">X &lt;- A</p>
+
+<p valign="top">BPF_MISC+BPF_TXA</p>
+
+<p style="margin-left:51%; margin-top: 1em">A &lt;- X</p>
+
+<p style="margin-left:8%; margin-top: 1em">The <b>bpf</b>
+interface provides the following macros to facilitate array
+initializers: <b>BPF_STMT</b>(<i>opcode</i>, <i>operand</i>)
+and <b>BPF_JUMP</b>(<i>opcode</i>, <i>operand</i>,
+<i>true_offset</i>, <i>false_offset</i>).</p>
+
+<p style="margin-top: 1em" valign="top"><b>FILES</b> <br>
+/dev/bpf<b>n</b></p>
+
+<p style="margin-left:28%; margin-top: 1em">the packet
+filter device</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>EXAMPLES</b></p>
+
+<p style="margin-left:8%;">The following filter is taken
+from the Reverse ARP Daemon. It accepts only Reverse ARP
+requests.</p>
+
+<p style="margin-left:8%; margin-top: 1em">struct bpf_insn
+insns[] = {</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_H+BPF_ABS, 12),</p></td>
+<td width="13%"></td>
+<td width="55%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K,
+ETHERTYPE_REVARP, 0, 3),</p></td>
+<td width="13%"></td>
+<td width="55%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_H+BPF_ABS, 20),</p></td>
+<td width="13%"></td>
+<td width="55%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K,
+REVARP_REQUEST, 0, 1),</p></td>
+<td width="13%"></td>
+<td width="55%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">BPF_STMT(BPF_RET+BPF_K, sizeof(struct
+ether_arp) +</p></td>
+<td width="13%"></td>
+<td width="55%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+</td>
+<td width="13%">
+
+
+<p valign="top">sizeof(struct ether_header)),</p></td>
+<td width="55%">
+</td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="12%">
+
+
+<p valign="top">BPF_STMT(BPF_RET+BPF_K, 0),</p></td>
+<td width="13%"></td>
+<td width="55%">
+</td>
+</table>
+
+<p style="margin-left:8%;">};</p>
+
+<p style="margin-left:8%; margin-top: 1em">This filter
+accepts only IP packets between host 128.3.112.15 and
+128.3.112.35.</p>
+
+<p style="margin-left:8%; margin-top: 1em">struct bpf_insn
+insns[] = {</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_H+BPF_ABS, 12),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K,
+ETHERTYPE_IP, 0, 8),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_W+BPF_ABS, 26),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0x8003700f,
+0, 2),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_W+BPF_ABS, 30),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0x80037023,
+3, 4),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0x80037023,
+0, 3),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_W+BPF_ABS, 30),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0x8003700f,
+0, 1),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_RET+BPF_K, (u_int)-1),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_RET+BPF_K, 0),</p></td>
+</table>
+
+<p style="margin-left:8%;">};</p>
+
+<p style="margin-left:8%; margin-top: 1em">Finally, this
+filter returns only TCP finger packets. We must parse the IP
+header to reach the TCP header. The BPF_JSET instruction
+checks that the IP fragment offset is 0 so we are sure that
+we have a TCP header.</p>
+
+<p style="margin-left:8%; margin-top: 1em">struct bpf_insn
+insns[] = {</p>
+
+<table width="100%" border=0 rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_H+BPF_ABS, 12),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K,
+ETHERTYPE_IP, 0, 10),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_B+BPF_ABS, 23),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K,
+IPPROTO_TCP, 0, 8),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_H+BPF_ABS, 20),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JSET+BPF_K, 0x1fff, 6,
+0),</p> </td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LDX+BPF_B+BPF_MSH, 14),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_H+BPF_IND, 14),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 79, 2,
+0),</p> </td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_LD+BPF_H+BPF_IND, 16),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 79, 0,
+1),</p> </td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_RET+BPF_K, (u_int)-1),</p></td>
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="80%">
+
+
+<p valign="top">BPF_STMT(BPF_RET+BPF_K, 0),</p></td>
+</table>
+
+<p style="margin-left:8%;">};</p>
+
+<p style="margin-top: 1em" valign="top"><b>SEE ALSO</b></p>
+
+<p style="margin-left:8%;">tcpdump(1), ioctl(2)</p>
+
+<p style="margin-top: 1em" valign="top">McCanne, S.</p>
+
+<p style="margin-left:8%;">and</p>
+
+<p valign="top">Jacobson V. , <i><br>
+An efficient, extensible, and portable network monitor</i>
+.</p>
+
+<p style="margin-top: 1em" valign="top"><b>HISTORY</b></p>
+
+<p style="margin-left:8%;">The Enet packet filter was
+created in 1980 by Mike Accetta and Rick Rashid at
+Carnegie-Mellon University. Jeffrey Mogul, at Stanford,
+ported the code to BSD and continued its development from
+1983 on. Since then, it has evolved into the Ultrix Packet
+Filter at DEC, a STREAMS NIT module under SunOS 4.1, and
+BPF.</p>
+
+<p style="margin-top: 1em" valign="top"><b>AUTHORS</b></p>
+
+<p style="margin-left:8%;">Steven McCanne, of Lawrence
+Berkeley Laboratory, implemented BPF in Summer 1990. Much of
+the design is due to Van Jacobson.</p>
+
+<p style="margin-top: 1em" valign="top"><b>BUGS</b></p>
+
+<p style="margin-left:8%;">The read buffer must be of a
+fixed size (returned by the BIOCGBLEN ioctl).</p>
+
+<p style="margin-left:8%; margin-top: 1em">A file that does
+not request promiscuous mode may receive promiscuously
+received packets as a side effect of another file requesting
+this mode on the same hardware interface. This could be
+fixed in the kernel with additional processing overhead.
+However, we favor the model where all files must assume that
+the interface is promiscuous, and if so desired, must
+utilize a filter to reject foreign packets.</p>
+
+<p style="margin-left:8%; margin-top: 1em">BSD
+January&nbsp;16, 1996 BSD</p>
+<hr>
+</body>
+</html>
