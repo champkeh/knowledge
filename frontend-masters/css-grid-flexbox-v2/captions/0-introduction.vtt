@@ -1,0 +1,162 @@
+Hello everyone, my name is Jen Kramer, I am a instructor, I've been teaching HTML
+and CSS for over 20 years. most recently at Harvard University but I've taught
+in all kinds of environments, academic and commercial environments workshops and
+online courses, all kinds of other things.
+
+And I am so excited to present to you the second version of my course on CSS grids
+and Flexbox layouts. Let's take a look at all of the cool things that you're gonna
+learn inside of this course.
+
+First, we're gonna start with Flexbox. And we're gonna take a look at all types of
+different Flexbox properties. And how you can set up Grid based layout systems
+using Flexbox across, of course, all of the various media queries.
+
+We'll move on to a cool trick that we can use with figures and figure captions among
+other types of HTML markup. This is going to allow us to layer our figure captions
+on top of figures here.
+
+For a really lovely looking web page and then we're gonna put together those two
+pieces of learning that Grid system and this concept of wearing our captions with
+the figures Into a webpage project here, the first part of it.
+
+Where we will lay out a series of images here with lovely overlays describing all
+of these various types of images. We'll take a quick peek at CSS shapes, and look
+at the lovely way we can make our texts go on a slant like this.
+
+And of course we'll work on our footer layout and that will work across our various
+breakpoints. So of course, we're going to go to different layouts as we hit our
+different breakpoints here in that particular web page.
+
+Then we'll move on to adding a header and a footer for our webpage. We'll look at
+Flexbox and how we can make very interesting looking navbars.
+
+Here is an example where we have our logo in the middle of the navbar, and then
+as we squash the screen down here, we wind up with the navbar underneath the logo
+on the top and then finally we'll turn our navigation into a series of buttons
+all using CSS.
+
+Then we'll move on to adding responsive images to the website we'll talk about the
+various approaches to as responsive images, including the picture elements. We'll
+look at source set and sizes as ways of loading responsive images. And we'll include
+this hero element on the page as well as a featured print.
+
+And then using those responsive images depending on what break point we have to
+be looking at We'll look at different versions of that picture on the webpage.
+
+Finally, to wrap up the Flexbox portion of this course, we will move on to adding
+the popular prints section of this homepage for a fully completed homepage by the
+end of the Flexbox unit of the course.
+
+Then we'll move on to CSS Grid. As always, we'll start with looking at the various
+individual properties. And we'll do that by looking at a painting by Piet Mondrian
+and will code it up with CSS Grid. Then we're going to look at the same kind of figure
+in figure caption tricks that we did with Flexbox using.
+
+Absolute and relative positioning now we're going to make that happen instead using
+CSS Grid and Grid's fantastic ability to overlap cells and so we don't need to use
+absolute relative positioning, we can just use Grid to overlap those cells.
+
+That also means we can do other kinds of cool things with Grid like this by overlapping
+to figures and using CSS animation to fade in and out different pictures on the webpage.
+
+We'll move on to adding a different section of the homepage. In this case it will be
+a mosaic based layout. We will have all different types of pictures of different heights,
+and widths, and spanning over rows, and columns, inside of our lay out and of
+course we'll wind up making that responsive as well.
+
+We'll then take a look at some magazine styled layouts, so here we've got a series
+of cats on our page, and they have different placements and different sizes and
+different images and so forth.
+
+We'll look at how easily we can make that kind of magic happen without any math,
+and just simply assigning a few classes and changing a few properties, you can
+achieve these types of layouts.
+
+And finally, we'll do a very cool trick here with cards. So we'll create cards that
+have one particular layout here on desktop, they'll move on to a very different
+kind of layout.
+
+Notice how we had the image in the middle of the text here. Now we've got the image
+on the left the text on the right, with Grid and then finally back to a different
+type of layout here on mobile devices and we'll walk through how we can do that
+making use of Flexbox and Grid and more Grid inside of grids.
+
+And then finally, we'll build our final website where you have lots of choices for
+how that might look. This happens to be the way that I came up with it.
+
+Another mosaic style layout of a bunch of beautiful donut pictures, and a cool
+overlay of the text here on top of one of the images inside of the Grid cell.
+
+When we get to smaller dimensions that tech shows up first, with the images stacked
+nicely underneath.
+
+81
+00:05:40.800 --> 00:05:45.605
+As always with this course, it comes with
+a website which will give you all of
+
+82
+00:05:45.605 --> 00:05:50.486
+the background information, all of
+the links to the various code pens, some
+
+83
+00:05:50.486 --> 00:05:55.840
+additional pointers and guidance along the
+way as we work through the information.
+
+84
+00:05:55.840 --> 00:06:00.542
+And it's broken up into a chunk of
+material pertaining to Flexbox and
+
+85
+00:06:00.542 --> 00:06:03.310
+a chunk of material pertaining to Grid.
+
+86
+00:06:03.310 --> 00:06:07.780
+So you can refer to this as you work
+through the materials on the course.
+
+87
+00:06:07.780 --> 00:06:11.093
+And finally, all of the files
+are available on GitHub, so
+
+88
+00:06:11.093 --> 00:06:13.122
+you can download all of the files and
+
+89
+00:06:13.122 --> 00:06:17.680
+follow along with everything that
+I'm doing here in the course.
+
+90
+00:06:17.680 --> 00:06:23.060
+I am really excited to be recording
+an update to the Flexbox and Grid course.
+
+91
+00:06:23.060 --> 00:06:28.500
+I've reworked almost all of the material
+from the original version of this course.
+
+92
+00:06:28.500 --> 00:06:33.578
+And I'm including all kinds of new
+techniques and new inspirations for
+
+93
+00:06:33.578 --> 00:06:39.413
+you that I hope will inspire you to make
+more interesting layouts using Flexbox and
+
+94
+00:06:39.413 --> 00:06:39.931
+Grid.
+
+95
+00:06:39.931 --> 00:06:41.091
+So let's get started.

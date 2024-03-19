@@ -24,5 +24,8 @@
     "concat-stream": "^2.0.0",
     "serialize-javascript": "^6.0.0",
     "vlq": "^2.0.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.1.6"
   }
 }

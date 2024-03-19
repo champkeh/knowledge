@@ -1,4 +1,4 @@
-# 计算机的一些缩写语
+# 计算机行业的一些缩写语
 
 
 ## Github
@@ -84,7 +84,7 @@
 
 ### TBD
 
-> `TBD`: To Be Done(or Defined/Discussed/Decided/Determined)
+> `TBD`: To Be Done (or Defined/Discussed/Decided/Determined)
 
 根据语境不同意义有所区别，但一般都是还没搞定的意思
 

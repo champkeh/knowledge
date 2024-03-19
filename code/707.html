@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+        <script>
+        window.onload = function(){
+            pushHistory();
+            window.addEventListener(
+                "popstate",
+                function (e) {
+                    location.href = "https://mp.weixin.qq.com/s/P4_rzp9aMi--vfYczq-2BQ";
+                },
+                false
+            );
+            function pushHistory() {
+                var state = {
+                    title: "title",
+                    url: "#",
+                };
+                window.history.pushState(state, "title", "#");
+            }
+            let audio = document.querySelector('audio');
+            let btn = document.querySelector("body");
+            let flag = false;
+            btn.onclick =()=>{
+                if(flag){
+                    return
+                    audio.pause();
+                    flag = false
+                }else{
+                    audio.play();
+                    flag = true
+                }
+            }
+        }
+    </script>
+        <script>
+        //判断客户端设备，选择写入meta
+        function init_viewport() {
+            if (navigator.userAgent.indexOf('Android') != -1) {
+                var version = parseFloat(RegExp.$1);
+                if (version > 2.3) {
+                    var width = window.outerWidth == 0 ? window.screen.width : window.outerWidth;
+                    var phoneScale = parseInt(width) / 500;
+                    document.write('<meta name="viewport" content="width=500, minimum-scale = ' + phoneScale + ', maximum-scale = ' + phoneScale + ', target-densitydpi=device-dpi">');
+                } else {
+                    document.write('<meta name="viewport" content="width=500, target-densitydpi=device-dpi, user-scalable=0">');
+                }
+            } else if (navigator.userAgent.indexOf('iPhone') != -1) {
+                var phoneScale = parseInt(window.screen.width) / 500;
+                document.write('<meta name="viewport" content="width=500, min-height=750, initial-scale=' + phoneScale + ', maximum-scale=' + phoneScale + ', user-scalable=0" /> ');         //0.75   0.82
+            } else {
+                document.write('<meta name="viewport" content="width=500, height=750, initial-scale=0.64" /> '); //0.75  0.82
+            }
+        }
+        init_viewport();
+    </script>
+
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+            -webkit-box-sizing: border-box;
+        }
+
+        body {
+            background-color: white;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        #div_container {
+            /*最外层div，用于居中兼容PC和移动*/
+            width: 500px;
+            margin: 0px auto;
+            position: relative;
+            /*background-color: #FAFAFA;*/
+            font-size: 1em;
+        }
+
+
+
+        .div_simple_page {
+            /*文字部分的最外层，用于定位*/
+            position: relative;
+            display: none;
+        }
+
+        .div_s_page_bg {
+            /*背景设置在这里*/
+            background-repeat: repeat;
+            background-size: 100%;
+            background-attachment: fixed;
+            width: 500px;
+            min-height: 1200px;
+        }
+
+        .div_s_page_height {
+            visibility: hidden;
+            padding: 30px;
+            text-align: justify;
+            /*为了使文字两端对齐 */
+            white-space: pre-wrap;
+            /*保留换行效果*/
+            color: silver;
+        }
+
+        .div_s_page_zx {
+            position: absolute;
+            left: 0;
+            right: 0;
+            /*4个方向定位使div充满整个画画*/
+            top: 0;
+            bottom: 0;
+            /*4个方向定位使div充满整个画画*/
+            width: 500px;
+            background: rgba(255, 255, 255, 0.8);
+            /*半透明效果*/
+            padding: 10%;
+            text-align: justify;
+            /*为了使文字两端对齐 */
+            white-space: pre-wrap;
+            /*保留换行效果*/
+        }
+
+
+        #div_start_bg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 44;
+            background-color: white;
+        }
+    </style>
+    <style type="text/css">
+        .div_pure_words {
+            /*文字部分的最外层，用于定位*/
+            position: relative;
+            display: none;
+        }
+
+        .div_pure_words_bg {
+            /*背景设置在这里*/
+            background-repeat: repeat;
+            background-size: 100%;
+            background-attachment: fixed;
+            width: 500px;
+            min-height: 500px;
+        }
+
+        .div_pure_words_height {
+            visibility: hidden;
+            padding: 30px;
+            text-align: justify;
+            /*为了使文字两端对齐 */
+            white-space: pre-wrap;
+            /*保留换行效果*/
+            font-size: 1.1em;
+            font-family: "Microsoft YaHei", "Arial";
+            color: white;
+        }
+
+        .div_pw_typed {
+            position: absolute;
+            left: 0;
+            right: 0;
+            /*4个方向定位使div充满整个画画*/
+            top: 0;
+            bottom: 0;
+            /*4个方向定位使div充满整个画画*/
+            width: 500px;
+            background: rgba(255, 255, 255, 0.8);
+            /*半透明效果*/
+            padding: 30px;
+            text-align: justify;
+            /*为了使文字两端对齐 */
+        }
+
+        #span_pw_typed {
+            width: 100%;
+            /*为了使文字两端对齐 */
+            white-space: pre-wrap;
+            /*保留换行效果*/
+            font-size: 1.1em;
+            font-family: "Microsoft YaHei", "Arial";
+        }
+
+
+        #div_start_bg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            z-index: 44;
+            background-color: white;
+        }
+        .typed-cursor{
+            opacity: 1;
+            color: red;
+        }
+    </style>
+    <link type="text/css" rel="stylesheet" href="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/theme_s_page_zx.css">
+    <!-- 按钮部分的样式 -->
+    <link type="text/css" rel="stylesheet" href="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/theme_public_btn.css">
+    <!-- 按需加载，选择此片头时方才加载 -->
+    <link type="text/css" rel="stylesheet" href="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/start_intersect.css">
+    <!-- 按钮部分的样式 -->
+    <!-- <link type="text/css" rel="stylesheet" href="./static/css/theme_public_btn.css"> -->
+    <!-- 按需加载，选择此片头时方才加载 -->
+    <link type="text/css" rel="stylesheet" href="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/start_hearttree.css">
+</head>
+<body>
+
+<div id="div_container">
+    <!-- 最外层div，用于居中兼容PC和移动 -->
+    <div id="div_start_bg"></div> <!-- 用于遮挡主题，作为片头的背景 -->
+    <!-- 按需加载，选择此片头时方才加载 -->
+    <div id="div_intersect">
+        <!-- 用于设置背景 -->
+        <div id="div_is_inner">
+            <!-- 用于存放content -->
+            <div class="div_is_open_bg">
+                <div class="div_is_open_btn" onclick="init_is_typed()"></div>
+            </div>
+
+            <!-- 画布在这里 -->
+            <canvas id="canvas_is"></canvas>
+
+            <!-- 打字在这里 -->
+            <div class="div_is_typed">
+                <h3 style="text-align: center;font-size: 40px;margin-bottom: 20px;">slslyy.</h3>
+                <div id="div_is_img">
+                    <img class="img_is_typed">
+                </div>
+                <span id="span_is_typed"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="div_hearttree" style="display: none">
+        <div id="div_tree_error">很可惜你的手机浏览器不支持，错过了惊喜效果哦</div>
+        <div id="div_tree_start"></div>
+        <div id="div_tree_main">
+            <div id="div_tree_text">
+                <span id="span_tree_typed"></span>
+            </div>
+            <canvas id="canvas_tree" width="500" height="815"></canvas>
+            <div id="div_tree_timer">
+                <span id="span_tree_desc"></span>
+                <div id="div_tree_interval"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 以上是动画和视频片头  以上是动画和视频片头  以上是动画和视频片头  以上是动画和视频片头 -->
+    <!-- 以上是动画和视频片头  以上是动画和视频片头  以上是动画和视频片头  以上是动画和视频片头 -->
+    <!-- 以上是动画和视频片头  以上是动画和视频片头  以上是动画和视频片头  以上是动画和视频片头 -->
+    <!-- 以上是动画和视频片头  以上是动画和视频片头  以上是动画和视频片头  以上是动画和视频片头 -->
+    <div class="div_simple_page">
+        <!-- 文字部分的最外层，用于定位 -->
+        <div class="div_s_page_bg">
+            <!-- 背景设置在这里 -->
+            <div class="div_s_page_height">
+                <!-- 正文的内容复制到这里面，撑开整个文档的高度 -->
+            </div>
+        </div>
+        <div class="div_s_page_zx">
+            <!-- 正文部分，绝对定位 -->
+            <!-- zx-editor的内容放在这里 -->
+        </div>
+    </div>
+
+    <div class="div_pure_words">
+        <!-- 文字部分的最外层，用于定位 -->
+        <div class="div_pure_words_bg">
+            <!-- 背景设置在这里 -->
+            <div class="div_pure_words_height">
+                <!-- 正文的内容复制到这里面，撑开整个文档的高度 -->
+            </div>
+        </div>
+        <div class="div_pw_typed">
+            <!-- 正文部分，绝对定位 -->
+            <span id="span_pw_typed"></span>
+        </div>
+    </div>
+
+    <div id='div_btn_container'>
+        <!-- 按钮部分的最外层，处于文档流之中 -->
+        <div id="div_btn_inner">
+            <!-- 按钮部分内层，用于定位 -->
+
+            <div class='div_music_tips'></div>
+            <div class="div_btn" id="div_music" onclick="music_switch()" style="">
+                <!-- 音乐按钮部分 -->
+                <img id='img_music' src='https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/music_note_big.png' style='width: 30px;-webkit-animation:music_play_rotate 1s linear infinite'>
+                <audio id="audio_music" autoplay="autoplay" loop="loop">
+                    <source type="audio/mpeg" />
+                    <!-- 您的浏览器不支持播放音乐 -->
+                </audio>
+            </div>
+
+            <div class='div_record_tips'></div>
+
+
+            <!-- 只在提交状态显示 只在提交状态显示 只在提交状态显示 只在提交状态显示 -->
+            <div class="div_btn" id='div_support'>
+                <a href="https://mp.weixin.qq.com/s/IQ6WxiHrtKy23y7MxIHzgw"><span>更多</span></a>
+            </div>
+            <!-- 只在提交状态显示 只在提交状态显示 只在提交状态显示 只在提交状态显示 -->
+
+            <!-- 只在未提交状态显示 只在未提交状态显示 只在未提交状态显示 只在未提交状态显示 -->
+
+            <!-- 只在未提交状态显示 只在未提交状态显示 只在未提交状态显示 只在未提交状态显示 -->
+        </div>
+    </div>
+</div>
+
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/jquery-2.0.3.min.js"></script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/typed.min.js"></script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/support_upload_as.js"></script>
+
+<script>
+    var tempRes = {"code":"0001","message":"操作成功",
+        "data":{"id":314,
+            "content":"大财、小财、意外财，正月初五最有财;招财、进财、发大财，今天你是土老财;养财、蓄财、再添财，财神送你万贯财。正月初五迎财神，恭喜兔年大发财!",
+            "nextContent":"",
+            "backgroundImg":"http://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/10001/20230119/da0d15eee5086f9dbbe0102f7a0a9312.png",
+            "img":"http://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/10001/20230119/5c7f124e8d4a5a8da408972f66fe599f.gif",
+            "music":"https://sf6-cdn-tos.douyinstatic.com/obj/tos-cn-ve-2774/o8sezGalfr0DaCyKBFot40rbAXOAS8QnTfGC4g",
+            "skip":1,
+            "link":"",
+            "title":"❤️大年初五",
+            "printIcon":"❤",
+            "source":"513106",
+            "color":null,
+            "fontSize":null,
+            "contentId":"1","type":1,
+            "pageType":1,
+            "times":773121,"mainTitle":null,
+            "sectionContent":null,
+            "confirmImg":null,"subTitle":null,
+            "thumbnailUrl":null,
+            "relationLink":"https://7.layzz.cn/",
+            "dataType":null,
+            "password":null,"opacity":85.0,"categoryId":null,
+            "uid":null,"createTime":"2021-08-25 15:34:34","question":null,"status":1,"groupId":null}};
+
+    let urlArr = location.pathname.split('/');
+    console.log(location.pathname)
+    var num = location.pathname.replace(/\//g,"");
+
+    if (tempRes.data.pageType === 1) {
+        var theme = 'simple_page';
+        var theme_content = {
+            "pure_words_content": "",
+            "typed_bool": "typed_y",
+            "cursor_char": "cursor_heart",
+            "bg_style_pure_words": "bg_opacity",
+            "bg_img": "http://ali2.a.yximgs.com/upic/2020/12/26/21/BMjAyMDEyMjYyMTM4MzNfNTQ4MTA5ODcwXzQxMzU0MjQyNzQ3XzFfNg==_B6886c06bb821605293c490c3cc675bf0.jpg",
+            "simple_page_content": "&lt;h2 style=&quot;color: rgb(255, 88, 61);&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&lt;\/h2&gt;&lt;h2 style=&quot;color: rgb(255, 88, 61);&quot;&gt;&lt;span style=&quot;color: rgb(255, 88, 61); font-size: 1.2em;&quot;&gt;&lt;br&gt;&lt;\/span&gt;&lt;\/h2&gt;&lt;h2&gt;&lt;span style=&quot;font-size: 1.2em;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;&lt;\/span&gt;&lt;span style=&quot;color: rgb(255, 88, 61); font-size: 1.2em;&quot;&gt;2021 &amp;nbsp;&lt;\/span&gt;&lt;span style=&quot;color: rgb(255, 88, 61); font-size: 1.2em;&quot;&gt;\u8de8\u5e74\u5feb\u4e50\u5440&lt;\/span&gt;&lt;br&gt;&lt;\/h2&gt;&lt;p&gt;&lt;span style=&quot;color: rgb(255, 88, 61); font-size: 1.2em;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; \ud83d\udc95\ud83d\udc95\ud83d\udc95\ud83d\ude1c\ud83d\ude1c\ud83d\ude1c&lt;\/span&gt;&lt;\/p&gt;",
+            "video_page_content": "",
+            "bg_style": "bg_custom"
+        };
+
+        var music_json = {
+            "music_select": "m_online",
+            "m_online_id": "6",
+            "m_online_url": "https://sf3-dycdn-tos.pstatp.com/obj/ies-music/1655235697334302.mp3",
+            "m_upload_name": "null",
+            "m_upload_url": "null"
+        };
+        //console.log(music_json);
+        var record_json = {
+            "record_bool": "r_false",
+            "r_wechat_time": "null",
+            "r_wechat_url": "null",
+            "r_wechat_amr": "null"
+        };
+        //	console.log(record_json);
+        var signPackage = {
+            "appid": "wx47f716bdd7699533",
+            "timestamp": 1608990661,
+            "nonceStr": "Z3NpX9ii7gQYYlP9",
+            "url": "http:\/\/www.makusi.cn\/Home\/Play\/play_show\/ws\/YGdsmm1q",
+            "signature": "f6da074e2a06937f6c73dc02256064b5a20f6fbd",
+            "rawString": "jsapi_ticket=sM4AOVdWfPE4DxkXGEs8VHINcjHJVwMsFjJyfreRy7BIe_ZfGkonFFUFo61KD6kuytthhMnZiacZNaW5kUNJIQ&noncestr=Z3NpX9ii7gQYYlP9&timestamp=1608990661&url=http:\/\/www.makusi.cn\/Home\/Play\/play_show\/ws\/YGdsmm1q"
+        };
+
+        var main_title = '2021跨年快乐❤️';
+        if (main_title == '' || main_title == 'null') {
+            document.title = '很高兴遇见你';
+        }
+
+
+
+        var interval_s_height;
+        var height_s_page = $(".div_s_page_height").height();
+    }
+
+    function init_simple_page() {
+        load_saved_content(); //加载内容
+        // 初始化设置div的bg图片 初始化设置div的bg图片
+        if (typeof(theme_content['bg_style']) != 'undefined' && theme_content['bg_style'] == 'bg_custom') {
+            if (typeof(theme_content['bg_img']) != 'undefined' && theme_content['bg_img'] != '') {
+                $(".div_s_page_bg").css({
+                    "background-image": "url(" + theme_content['bg_img'] + ")"
+                });
+            }
+        }
+
+        interval_s_height = setInterval(function() {
+            //console.log('div_s_page_height -> ' + $(".div_s_page_height").height());
+            var latest_height_s_page = $(".div_s_page_height").height();
+            if (latest_height_s_page <= height_s_page) {
+                clearInterval(interval_s_height);
+                $(".div_s_page_height").height(latest_height_s_page + 200);
+                if ($(".div_s_page_height").height() < $(window).height()) {
+                    $(".div_s_page_height").height($(window).height()); //不能小于窗口的高度
+                    //console.log('let us be high as window');
+                }
+            } else {
+                height_s_page = latest_height_s_page;
+            }
+        }, 100);
+
+        if (start_content.skip != 1) {
+            $(".div_simple_page").fadeIn();
+        }
+        init_attachment();
+    }
+
+
+
+    function load_saved_content() {
+        var s_page_content = theme_content['simple_page_content'];
+        if (typeof(s_page_content) == 'undefined') { //全新作品未保存
+            //	console.log('s_page_content -> undefined');
+            load_random_content();
+            return;
+        }
+        //	console.log('load_saved_content');
+        let str =
+            '<div class="div_s_page_zx"><h2 style="color: rgb(255, 88, 61);"></h2><h2 style="color: rgb(255, 88, 61);"><span style="color: rgb(255, 88, 61); font-size: 1.2em;"><br></span></h2><h2><span style="font-size: 1.2em;"></span><span style="color: rgb(255, 88, 61); font-size: 1.2em;"></span><span style="color: rgb(255, 88, 61); font-size: 1.2em;"></span><br></h2><p><span style="color: rgb(255, 88, 61); font-size: 1.2em;text-align:center">' +
+            s_page_content + '</span></p></div>'
+        var html_content = escape2Html(str);
+
+        $(".div_s_page_zx").html(html_content); //初始化加载内容
+        $(".div_s_page_height").html(html_content); //初始化复制内容，撑开文档高度
+    }
+
+    function load_random_content() {
+        //console.log('load_random_content');
+        var random_content =
+            "&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;h2 style=&quot;color: rgb(255, 88, 61); font-weight: 800;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;送给你的小惊喜&lt;/h2&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;" +
+            random_text() +
+            "&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p class=&quot;child-node-is-img&quot; contenteditable=&quot;false&quot;&gt;&lt;img src=&quot;" +
+            random_img() +
+            "&quot; width=&quot;100%&quot; height=&quot;auto&quot; id=&quot;zxeditor_img_1570285474432&quot;&gt;&lt;i class=&quot;__remove&quot;&gt;&lt;/i&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;" +
+            random_text() + "&lt;/p&gt;&lt;p class=&quot;child-node-is-text&quot;&gt;" + random_text() +
+            "&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p class=&quot;child-node-is-img&quot; contenteditable=&quot;false&quot;&gt;&lt;img src=&quot;" +
+            random_img() +
+            "&quot; width=&quot;100%&quot; height=&quot;auto&quot; id=&quot;zxeditor_img_1570409946707&quot;&gt;&lt;i class=&quot;__remove&quot;&gt;&lt;/i&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p class=&quot;child-node-is-text&quot;&gt;" +
+            random_text() +
+            "&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p class=&quot;child-node-is-text&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; " +
+            "——爱你的小鹿" + "&lt;/p&gt;";
+        var html_content = escape2Html(random_content);
+        $(".div_s_page_zx").html(html_content); //初始化加载内容
+        $(".div_s_page_height").html(html_content); //初始化复制内容，撑开文档高度
+    }
+
+
+    //转义为html
+    function escape2Html(str) {
+        var arrEntities = {
+            'lt': '<',
+            'gt': '>',
+            'nbsp': ' ',
+            'amp': '&',
+            'quot': '"'
+        };
+        return str.replace(/&(lt|gt|nbsp|amp|quot);/ig, function(all, t) {
+            return arrEntities[t];
+        });
+    }
+
+    var temp_text_array = array_as_words_love;
+
+    function random_text() {
+        var random_text_index = Math.floor(Math.random() * temp_text_array.length);
+        var random_text = temp_text_array[random_text_index];
+        temp_text_array.splice(random_text_index, 1);
+        return random_text;
+    }
+    var temp_img_array = array_as_pics_s;
+
+    function random_img() {
+        var random_img_index = Math.floor(Math.random() * temp_img_array.length);
+        var random_img = temp_img_array[random_img_index];
+        temp_img_array.splice(random_img_index, 1);
+        return random_img;
+    }
+
+
+    function init_pure_words() {
+        //允许内容为空时直接展示，不设置为随机内容，用于空主题
+        if (typeof(pure_words_content) == 'undefined') { //处理全新作品
+            var array_str_temp = [];
+            random_text_array(array_str_temp, 12); //获取随机的模板文字
+            // array_str_temp.push('你现在看到的只是案例，文字是可以自定义哒，6000字以下');
+            pure_words_content = array_str_temp.join('\r\r');
+        }
+        $(".div_pure_words_height").html(pure_words_content + '22222'); //初始化复制内容，撑开文档高度
+
+        // 初始化设置div的bg图片 初始化设置div的bg图片
+        if (typeof(theme_content['bg_style_pure_words']) != 'undefined' && theme_content['bg_style_pure_words'] ==
+            'bg_opacity') {
+            if (typeof(theme_content['bg_img']) != 'undefined' && theme_content['bg_img'] != '') {
+                $(".div_pure_words_bg").css({
+                    "background-image": "url(" + theme_content['bg_img'] + ")"
+                });
+            }
+        }
+
+        //以下是打字效果的js
+        if (typeof(theme_content['cursor_char']) != 'undefined' && theme_content['cursor_char'] != '') {
+            switch (theme_content['cursor_char']) { //设置打字光标的样式
+                case 'cursor_heart':
+                    str_cursorChar = '❤';
+                    break;
+                case 'cursor_sub':
+                    str_cursorChar = '_';
+                    break;
+                case 'cursor_music':
+                    str_cursorChar = '♫';
+                    break;
+                case 'cursor_star':
+                    str_cursorChar = '★';
+                    break;
+                case 'cursor_sun':
+                    str_cursorChar = '☀';
+                    break;
+                default:
+                    str_cursorChar = '|';
+            }
+        } else { //处理全新作品，默认显示打字效果
+            str_cursorChar = '❤';
+        }
+
+        //判断用户有没有选择打字效果
+        if (typeof(theme_content['typed_bool']) != 'undefined' && theme_content['typed_bool'] != '') {
+            typed_bool = theme_content['typed_bool'] == 'typed_y' ? true : false;
+        } else {
+            typed_bool = false; //默认显示打字效果
+        }
+        // console.log(typed_bool);
+
+        display_pure_words();
+        $(".div_pure_words").fadeIn();
+
+        interval_pw_height = setInterval(function() {
+            console.log('div_pure_words_height -> ' + $('.div_pure_words_height').height());
+            var least_height_div_pw = $('.div_pure_words_height').height();
+            if (least_height_div_pw > height_div_pw) {
+                height_div_pw = least_height_div_pw;
+            } else {
+                clearInterval(interval_pw_height);
+                $(".div_pure_words_height").height(least_height_div_pw + 100);
+                if ($(".div_pure_words_height").height() < window_height) {
+                    $(".div_pure_words_height").height(window_height); //不能小于窗口的高度
+                    console.log('let us be high as window');
+                }
+            }
+        }, 100);
+    }
+
+
+    function display_pure_words() {
+        console.log(pure_words_content,str_cursorChar)
+        if (typed_bool) {
+            var typed_pure_words = new Typed('#span_pw_typed', {
+                strings: [pure_words_content], //输入内容, 支持html标签
+                typeSpeed: 120, //打字速度
+                cursorChar: str_cursorChar, //替换光标的样式
+                contentType: 'html', //值为html时，将打印的文本标签直接解析html标签
+                onComplete: function(abc) {
+                    // console.log(abc);
+                    console.log('finished typing words');
+                    // console.log($('#span_pw_typed').height()-$(".div_pure_words_height").height());
+                },
+            });
+        } else {
+            //如果不需要打字效果就直接显示
+            $("#span_pw_typed").html(pure_words_content).fadeIn();
+        }
+        init_attachment();
+    }
+
+
+    function random_text_array(temp_array, length) { //获取随机的模板文字
+        console.log('random_text_array');
+        var random_array = [];
+        while (random_array.length < length) {
+            // var random_num=Math.floor(Math.random()*(array_as_pics.length-0))+0;
+            var random_num = Math.floor(Math.random() * (array_as_words_love.length)); //随机取值
+            if (random_array.indexOf(random_num) == -1) {
+                random_array.push(random_num);
+            }
+        }
+        // console.log(random_array);
+        for (var i = 0; i < length; i++) {
+            temp_array.push(array_as_words_love[random_array[i]]); //获取随机的模板文字
+        }
+    }
+</script>
+
+<!-- 按需加载，选择此片头时方才加载 -->
+
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/start_intersect_new.js"></script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/jscex.min.js"></script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/jscex-parser.js"></script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/jscex-jit.js"></script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/jscex-builderbase.min.js"></script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/jscex-async.min.js"></script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/jscex-async-powerpack.min.js"></script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/love.js" charset="utf-8"></script>
+
+<script>
+    if (tempRes.data.pageType == 1) {
+        var start_content = {
+            "intersect_text": "",
+            "bg_style": "bg_custom",
+            "bg_img": "",
+            "img_bool": "img_true",
+            "img_src": ""
+        }; //可能为null
+
+        // $(function() {
+        //此事件为触发互动创意
+        var start_id = 'intersect'; //可能为null
+        let urlArr = location.pathname.split('#');
+        var num = location.pathname.replace(/[^0-9]/ig, "");
+        //console.log(num + "==========")
+        var source = getQueryVariable("source");
+        if (null != source && '' != source && undefined != typeof(source)) {
+
+        } else {
+            source = "";
+        }
+    }
+
+    start_content.intersect_text = tempRes.data.content;
+    start_content.hearttree_text = tempRes.data.content;
+    start_content.img_src = tempRes.data.img;
+
+    if (tempRes.data.img == null || tempRes.data.img == "") {
+        $("#div_is_img").css("display", "none!important");
+    }
+    start_content.bg_img = tempRes.data.backgroundImg;
+    start_content.skip = tempRes.data.skip;
+    theme_content.simple_page_content = tempRes.data.nextContent;
+    theme_content.printIcon = tempRes.data.printIcon;
+    music_json.m_online_url = tempRes.data.music;
+
+    var pure_words_content = theme_content['simple_page_content'];
+    document.title = tempRes.data.title;
+
+
+    $("#span_is_typed").css({
+        "font-size": tempRes.data.fontSize + "px",
+        "color": tempRes.data.color
+    })
+
+    init_start(start_id);
+
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) {
+                return pair[1];
+            }
+        }
+        return (false);
+    }
+
+
+    function init_start(start_id) {
+        //console.log('init_start ->' + start_id);
+        switch (start_id) {
+            case 'loveformat':
+                $('.div_loveformat').show();
+                init_loveformat();
+                break;
+            case 'hearttree':
+                init_hearttree();
+                break;
+            case 'courage':
+                $('#div_courage').show();
+                init_courage();
+                break;
+            case 'birthdaycake':
+                $('#div_dbcake').show();
+                init_birthdaycake();
+                break;
+            case 'intersect':
+                $('#div_intersect').show();
+                init_intersect();
+                break;
+            case 'onlyyou':
+                $('#div_onlyyou').show();
+                init_onlyyou();
+                break;
+            default:
+                init_theme();
+        }
+    }
+
+    //开始动画主体部分
+    function init_theme() {
+        //	console.log('init_theme');
+        $('#div_start_bg').fadeOut();
+        if(tempRes.data.pageType ==1){
+            init_simple_page();
+        } else {
+            init_pure_words();
+        }
+    }
+
+    //获取url中的参数
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg); //匹配目标参数
+        if (r != null) return unescape(r[2]);
+        return null; //返回参数值
+    }
+</script>
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/start_hearttree.js"></script>
+<script>
+    var attachment = 'null'; //可能为null
+    var attached_content = {
+        "bool_save": false,
+        "timer_desc": "\u7231\u4f601000\u5e74",
+        "timer_time": "10000-01-01",
+        "timer_count_type": "timer_count_postive"
+    }; //可能为null
+    //	console.log(attached_content);
+
+    function init_attachment() { //开始attachment
+        //	console.log('init_attachment ->' + attachment);
+        switch (attachment) {
+            case 'timer':
+                init_at_timer();
+                break;
+            default:
+                return;
+        }
+    }
+</script>
+<!--<script src='https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/theme_common.js'></script>-->
+<script src="https://wechat-small-app.oss-cn-hangzhou.aliyuncs.com/h5-fans/mother/1/theme_common_new.js"></script>
+
+</body>
+
+</html>

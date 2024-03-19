@@ -12,6 +12,7 @@ Foo.getName = function () {
 
 Foo.prototype.getName = function () {
     console.log(3)
+    debugger
 }
 
 var getName = function () {

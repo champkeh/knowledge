@@ -1,0 +1,156 @@
+<!-- Creator     : groff version 1.19.2 -->
+<!-- CreationDate: Fri Sep 16 13:32:44 2022 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p     { margin-top: 0; margin-bottom: 0; }
+       pre   { margin-top: 0; margin-bottom: 0; }
+       table { margin-top: 0; margin-bottom: 0; }
+</style>
+<title></title>
+</head>
+<body>
+
+<hr>
+
+
+<p valign="top">SYSTEM_PROFILER(8) BSD System
+Manager&rsquo;s Manual SYSTEM_PROFILER(8)</p>
+
+<p style="margin-top: 1em" valign="top"><b>NAME</b></p>
+
+<p style="margin-left:8%;"><b>system_profiler</b> &mdash;
+reports system hardware and software configuration.</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>SYNOPSIS</b></p>
+
+<p style="margin-left:32%;"><b>system_profiler</b>
+[<b>&minus;usage</b>] <b><br>
+system_profiler</b> [<b>&minus;listDataTypes</b>] <b><br>
+system_profiler</b> [<b>&minus;xml</b>] <i>dataType1 ...
+dataTypeN</i> <b><br>
+system_profiler</b> [<b>&minus;xml</b>]
+[<b>&minus;detailLevel&nbsp;</b><i>level</i>] <b><br>
+system_profiler</b> [<b>&minus;json</b>] <i>dataType1 ...
+dataTypeN</i> <b><br>
+system_profiler</b> [<b>&minus;json</b>]
+[<b>&minus;detailLevel&nbsp;</b><i>level</i>]</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>DESCRIPTION</b></p>
+
+<p style="margin-left:8%;"><b>system_profiler</b> reports
+on the hardware and software configuration of the system. It
+can generate plain text reports or XML reports which can be
+opened with System Information.app, or JSON reports</p>
+
+<p style="margin-left:8%; margin-top: 1em">Progress and
+error messages are printed to stderr while actual report
+data is printed to stdout. Redirect stderr to /dev/null to
+suppress progress and error messages.</p>
+
+<p style="margin-left:8%; margin-top: 1em">The following
+options are available:</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;xml</b></p>
+
+<p style="margin-left:38%; margin-top: 1em">Generates a
+report in XML format. If the XML report is redirected to a
+file with a &quot;.spx&quot; suffix that file can be opened
+with System Information.app.</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;json</b></p>
+
+<p style="margin-left:38%; margin-top: 1em">Generates a
+report in JSON format.</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;listDataTypes</b></p>
+
+<p style="margin-left:38%; margin-top: 1em">Lists the
+available datatypes.</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;detailLevel</b>
+<i>level</i></p>
+
+<p style="margin-left:38%; margin-top: 1em">Specifies the
+level of detail for the report:</p>
+
+<p style="margin-top: 1em" valign="top">mini</p>
+
+<p style="margin-left:60%; margin-top: 1em">report with no
+personal information</p>
+
+<p style="margin-top: 1em" valign="top">basic</p>
+
+<p style="margin-left:60%; margin-top: 1em">basic hardware
+and network information</p>
+
+<p style="margin-top: 1em" valign="top">full</p>
+
+<p style="margin-left:60%; margin-top: 1em">all available
+information</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;timeout</b></p>
+
+<p style="margin-left:38%; margin-top: 1em">Specifies the
+maximum time to wait in seconds for results. If some
+information is not available within the specified time limit
+then an incomplete or partial report will be generated. The
+default timeout is 180 seconds. Specifying a timeout of 0
+means no timeout.</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>&minus;usage</b></p>
+
+<p style="margin-left:38%; margin-top: 1em">Prints usage
+info and examples.</p>
+
+
+<p style="margin-top: 1em" valign="top"><b>EXAMPLES</b></p>
+
+<p style="margin-left:8%;"><b>system_profiler</b> <br>
+Generates a text report with the standard detail level.</p>
+
+
+<p style="margin-left:8%; margin-top: 1em"><b>system_profiler</b>
+-detailLevel mini <br>
+Generates a short report containing no personal
+information.</p>
+
+
+<p style="margin-left:8%; margin-top: 1em"><b>system_profiler</b>
+-listDataTypes <br>
+Shows a list of the available data types.</p>
+
+
+<p style="margin-left:8%; margin-top: 1em"><b>system_profiler</b>
+SPSoftwareDataType SPNetworkDataType <br>
+Generates a text report containing only software and network
+data.</p>
+
+
+<p style="margin-left:8%; margin-top: 1em"><b>system_profiler</b>
+-xml &gt; MyReport.spx <br>
+Creates a XML file which can be opened by System
+Profiler.app</p>
+
+<p style="margin-top: 1em" valign="top"><b>AUTHORS</b></p>
+
+<p style="margin-left:8%;">Apple Inc.</p>
+
+<p style="margin-left:8%; margin-top: 1em">Darwin
+June&nbsp;30, 2003 Darwin</p>
+<hr>
+</body>
+</html>
