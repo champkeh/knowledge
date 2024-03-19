@@ -19,7 +19,7 @@
 
 > 从上图中也可以看到，`parse`和`postprocess`这两个过程都生成`events`数组。那为什么要分成2步来做这件事呢？
 > 
-> 也许跟`markdown`的解析策略有关，因为`markdown`的构造块是由`block`和`inline`元素组成，解析时需要先解析出`block`列表，然后再解析`block`内部的`inline`元素。
+> 或许跟`markdown`的解析策略有关，因为`markdown`的构造块是由`block`和`inline`元素组成，解析时需要先解析出`block`列表，然后再解析`block`内部的`inline`元素。
 > 具体可以参考 [CommonMark 官方给出的解析策略](https://spec.commonmark.org/0.31.2/#appendix-a-parsing-strategy)
 
 
@@ -169,7 +169,9 @@ export const remark = unified()
 +-----------------------------+
 ```
 
-就是将预处理的 chunks 数组解析为 events 数组。
+就是将预处理的 chunks 数组解析为 events 数组，只不过这一步只解析到`block`结构，不进行`inline`元素的解析。
+
+这一阶段会把行内元素用`ContentType`标记，并留在`postprocess`阶段再进行解析。
 
 这个过程的代码如下：
 
@@ -178,4 +180,154 @@ const parser = parse(options)
 parser.document().write(chunks)
 ```
 
----
+<details>
+<summary>查看示例</summary>
+
+下面这段4行的`markdown`文本的解析结果：
+```text
+> Lorem ipsum dolor
+sit amet.
+> - Qui *quodsi iracundia*
+> - aliquando id
+```
+
+```text
+[->]: blockQuote
+    [->]: blockQuotePrefix
+        [->]: blockQuoteMarker
+        [<-]: blockQuoteMarker
+        [->]: blockQuotePrefixWhitespace
+        [<-]: blockQuotePrefixWhitespace
+    [<-]: blockQuotePrefix
+    [->]: chunkFlow (contentType: flow)
+    [<-]: chunkFlow (contentType: flow)
+    [->]: chunkFlow (contentType: flow)
+    [<-]: chunkFlow (contentType: flow)
+    [->]: blockQuotePrefix
+        [->]: blockQuoteMarker
+        [<-]: blockQuoteMarker
+        [->]: blockQuotePrefixWhitespace
+        [<-]: blockQuotePrefixWhitespace
+    [<-]: blockQuotePrefix
+    [->]: listUnordered
+        [->]: listItemPrefix
+            [->]: listItemMarker
+            [<-]: listItemMarker
+            [->]: listItemPrefixWhitespace
+            [<-]: listItemPrefixWhitespace
+        [<-]: listItemPrefix
+        [->]: chunkFlow (contentType: flow)
+        [<-]: chunkFlow (contentType: flow)
+        [->]: blockQuotePrefix
+            [->]: blockQuoteMarker
+            [<-]: blockQuoteMarker
+            [->]: blockQuotePrefixWhitespace
+            [<-]: blockQuotePrefixWhitespace
+        [<-]: blockQuotePrefix
+        [->]: listItemPrefix
+            [->]: listItemMarker
+            [<-]: listItemMarker
+            [->]: listItemPrefixWhitespace
+            [<-]: listItemPrefixWhitespace
+        [<-]: listItemPrefix
+        [->]: chunkFlow (contentType: flow)
+        [<-]: chunkFlow (contentType: flow)
+    [<-]: listUnordered
+[<-]: blockQuote
+```
+
+</details>
+
+
+## 后处理(postprocess)
+
+解析过程如下：
+
+```txt
++------------------------------------+
+|           +-------------+          |
+| -events-> + postprocess +-events-> |
+|           +-------------+          |
++------------------------------------+
+```
+我们前面也说过了，`postprocess`阶段是用于解析`inline`元素的，这些元素已经在`parse`阶段被`ContentType`所标记。
+
+<details>
+<summary>查看示例</summary>
+
+继续前面的示例，经过`postprocess`解析后的结果如下：
+```text
+[->]: blockQuote
+    [->]: blockQuotePrefix
+        [->]: blockQuoteMarker
+        [<-]: blockQuoteMarker
+        [->]: blockQuotePrefixWhitespace
+        [<-]: blockQuotePrefixWhitespace
+    [<-]: blockQuotePrefix
+    [->]: content
+        [->]: paragraph
+            [->]: data
+            [<-]: data
+            [->]: lineEnding
+            [<-]: lineEnding
+            [->]: data
+            [<-]: data
+        [<-]: paragraph
+    [<-]: content
+    [->]: lineEnding
+    [<-]: lineEnding
+    [->]: blockQuotePrefix
+        [->]: blockQuoteMarker
+        [<-]: blockQuoteMarker
+        [->]: blockQuotePrefixWhitespace
+        [<-]: blockQuotePrefixWhitespace
+    [<-]: blockQuotePrefix
+    [->]: listUnordered
+        [->]: listItemPrefix
+            [->]: listItemMarker
+            [<-]: listItemMarker
+            [->]: listItemPrefixWhitespace
+            [<-]: listItemPrefixWhitespace
+        [<-]: listItemPrefix
+        [->]: content
+            [->]: paragraph
+                [->]: data
+                [<-]: data
+                [->]: emphasis
+                    [->]: emphasisSequence
+                    [<-]: emphasisSequence
+                    [->]: emphasisText
+                        [->]: data
+                        [<-]: data
+                    [<-]: emphasisText
+                    [->]: emphasisSequence
+                    [<-]: emphasisSequence
+                [<-]: emphasis
+            [<-]: paragraph
+        [<-]: content
+        [->]: lineEnding
+        [<-]: lineEnding
+        [->]: blockQuotePrefix
+            [->]: blockQuoteMarker
+            [<-]: blockQuoteMarker
+            [->]: blockQuotePrefixWhitespace
+            [<-]: blockQuotePrefixWhitespace
+        [<-]: blockQuotePrefix
+        [->]: listItemPrefix
+            [->]: listItemMarker
+            [<-]: listItemMarker
+            [->]: listItemPrefixWhitespace
+            [<-]: listItemPrefixWhitespace
+        [<-]: listItemPrefix
+        [->]: content
+            [->]: paragraph
+                [->]: data
+                [<-]: data
+            [<-]: paragraph
+        [<-]: content
+    [<-]: listUnordered
+[<-]: blockQuote
+[->]: lineEnding
+[<-]: lineEnding
+```
+</details>
