@@ -1,3 +1,28 @@
+<style>
+details {
+    --color: red;
+    --padding: 2em;
+    --line-width: 2px;
+
+    position: relative;
+    padding-left: var(--padding);
+}
+details[open]::before {
+    content: " ";
+    display: block;
+    width: var(--line-width);
+    position: absolute;
+    top: 8px;
+    bottom: 0;
+    left: 4px;
+    background: var(--color);
+}
+summary {
+    color: var(--color);
+    margin-left: calc(-1 * var(--padding) + 0px);
+}
+</style>
+
 # micromark 研究之路
 
 `micromark`是一款 markdown parser，可用于将 markdown 文本转为 html 格式。与普通意义上的 parser
@@ -127,7 +152,7 @@ export const remark = unified()
 +------------------------------------+
 ```
 
-就是将 markdown 文本内容预先处理成 chunks 数组，具体是如何处理的呢？很简单，将 markdown
+就是将 markdown 文本内容处理成 chunks 数组，具体是如何处理的呢？很简单，将 markdown
 文本中所有符合这个正则`/[\0\t\n\r]/g`的字符进行替换，替换规则如下：
 
 | 字符            |                  替换为                   |
@@ -148,12 +173,19 @@ export const remark = unified()
 =>
 
 ["ab", 65533, "cd", -2, -1, -1, "ef", -4, "gh", -5, "ij", -3, "k", null]
-  ^^     ^     ^^    ^   ^   ^   ^
-  ||     |           |           |
-  01     2           5           8
+  ^^     ^     ^^    ^   ^   ^   ^                                   ^
+  ||     |           |           |                                   |
+  01     2           5           8                                  eof
 
 (中间填充的2个 -1 就是为了后面的字符 e 处于8这一列，也就是tab列对齐)
 ```
+
+<details>
+<summary>嵌套details</summary>
+
+这是嵌套的details标签
+</details>
+
 </details>
 
 
@@ -172,13 +204,6 @@ export const remark = unified()
 就是将预处理的 chunks 数组解析为 events 数组，只不过这一步只解析到`block`结构，不进行`inline`元素的解析。
 
 这一阶段会把行内元素用`ContentType`标记，并留在`postprocess`阶段再进行解析。
-
-这个过程的代码如下：
-
-```js
-const parser = parse(options)
-parser.document().write(chunks)
-```
 
 <details>
 <summary>查看示例</summary>
@@ -238,6 +263,128 @@ sit amet.
 
 </details>
 
+这个过程的代码如下：
+
+```js
+const parser = parse({
+    extensions: [
+        ext1,
+        ext2,
+        // ...,
+        extN,
+    ],
+})
+const events = parser.document().write(chunks)
+```
+调用`parse`函数并传入需要的`extension`，返回解析器对象`parser`。`parser`中有一个很重要的属性就是`constructs`，你可以把这个属性当作是所有传入的`extension` merge 的结果，是解析时的主要依据。
+
+
+我们先来看下`extension`长什么样。
+下面是`micromark`类型定义中`Extension`的定义：
+```ts
+export interface Extension {
+    document?: ConstructRecord | undefined
+    contentInitial?: ConstructRecord | undefined
+    flowInitial?: ConstructRecord | undefined
+    flow?: ConstructRecord | undefined
+    string?: ConstructRecord | undefined
+    text?: ConstructRecord | undefined
+    disable?: {null?: Array<string> | undefined} | undefined
+    insideSpan?:
+        | {null?: Array<Pick<Construct, 'resolveAll'>> | undefined}
+        | undefined
+    attentionMarkers?: {null?: Array<Code> | undefined} | undefined
+}
+
+export type ConstructRecord = Record<
+    string,
+    Array<Construct> | Construct | undefined
+>
+
+export type Construct = {
+    tokenize: Tokenizer
+    name?: string | undefined
+    add?: 'after' | 'before' | undefined
+}
+```
+
+下图是`parse`函数把所有传入的`extension`组合后的结果：
+
+![img.png](img.png)
+
+图中`code`对应该字符所采用的`construct`数组，其中每个`construct`在该数组中的顺序由`extension`定义中的`add`选项控制，默认为`before`。
+
+<details>
+<summary>查看construct顺序示例</summary>
+
+```js
+const parser = parse({
+    extensions: [
+        {
+            text: {
+                123: {
+                    name: 'variable',
+                    // add: 'before'
+                }
+            }
+        },
+        {
+            text: {
+                123: {
+                    name: '1',
+                    // add: 'before'
+                }
+            }
+        },
+        {
+            text: {
+                123: {
+                    name: '2',
+                    // add: 'before'
+                }
+            }
+        },
+        {
+            text: {
+                123: {
+                    name: '3',
+                    add: 'after'
+                }
+            }
+        },
+        {
+            text: {
+                123: {
+                    name: '4',
+                    // add: 'before'
+                }
+            }
+        },
+        {
+            text: {
+                123: {
+                    name: '5',
+                    add: 'after'
+                }
+            }
+        },
+    ]
+})
+```
+
+上面这段代码合成的`constructs`结果如下：
+
+![img_1.png](img_1.png)
+</details>
+
+<details>
+<summary>如何理解 document/content/flow/string/text </summary>
+</details>
+
+`effects.consume(code)`的作用是移动当前游标(内部point)以指向下一个字符，同时将当前code保存在`context.previous`属性中。\
+`effects.enter(type, fields)`的作用是创建一个类型为`type`的token，并将事件对象`['enter', token, context]`添加到内部的`context.events`数组中。\
+`effects.exit(type)`的作用是将事件对象`['exit', token, context]`添加到`context.events`数组中。
+`effects.check()/effects.attemp()`会尝试解析construct
 
 ## 后处理(postprocess)
 

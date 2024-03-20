@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        details {
+            --color: red;
+            --padding: 2em;
+            --line-width: 2px;
+
+
+            position: relative;
+            padding-left: var(--padding);
+
+            &[open] {
+                &::before {
+                    content: "";
+                    display: block;
+                    width: var(--line-width);
+                    position: absolute;
+                    top: 8px;
+                    bottom: 0;
+                    left: 4px;
+                    background: var(--color);
+                }
+
+                & > summary {
+                    /*margin-bottom: 10px;*/
+                }
+            }
+
+            & > summary {
+                color: var(--color);
+                margin-left: calc(-1 * var(--padding) + 0px);
+            }
+        }
+    </style>
+</head>
+<body>
+<details>
+    <summary>查看示例</summary>
+
+    ```txt
+    `ab\0cd\tef\ngh\rij\r\nk`
+
+    =>
+
+    ["ab", 65533, "cd", -2, -1, -1, "ef", -4, "gh", -5, "ij", -3, "k", null]
+    ^^     ^     ^^    ^   ^   ^   ^                                   ^
+    ||     |           |           |                                   |
+    01     2           5           8                                  eof
+
+    (中间填充的2个 -1 就是为了后面的字符 e 处于8这一列，也就是tab列对齐)
+    ```
+
+    <details>
+        <summary>嵌套details</summary>
+
+        这是嵌套的details标签
+    </details>
+
+</details>
+</body>
+</html>
